@@ -115,6 +115,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\memory_alloc.hpp" />
+    <ClInclude Include="src\memory_construct.hpp" />
+    <ClInclude Include="src\traits.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
