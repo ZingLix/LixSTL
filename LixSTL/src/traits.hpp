@@ -57,7 +57,8 @@ namespace lix
 	//获得迭代器类型 category
 	template<class Itr>
 	typename iterator_traits<Itr>::iterator_category iterator_category(const Itr&) {
-		return typename iterator_traits<Itr>::iterator_category;
+		typedef typename iterator_traits<Itr>::iterator_category category;
+		return category();
 	}
 
 	//获得 distance type

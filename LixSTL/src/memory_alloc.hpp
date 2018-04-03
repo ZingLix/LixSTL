@@ -4,6 +4,8 @@
 namespace lix
 {
 
+
+
 class _alloc_template
 {
 public:
@@ -23,8 +25,8 @@ public:
 	//}
 };
 
-template<class T,class Alloc>
-class alloc
+template<class T,class Alloc=_alloc_template>
+class simple_alloc
 {
 public:
 	static T *allocate(size_t n) {

@@ -23,5 +23,19 @@
     <ClInclude Include="src\memory_alloc.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="include\memory">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vector.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory_uninitialized.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="test\main.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

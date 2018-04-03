@@ -115,9 +115,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\memory" />
     <ClInclude Include="src\memory_alloc.hpp" />
     <ClInclude Include="src\memory_construct.hpp" />
+    <ClInclude Include="src\memory_uninitialized.hpp" />
     <ClInclude Include="src\traits.hpp" />
+    <ClInclude Include="src\vector.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="test\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
