@@ -1,7 +1,7 @@
 #ifndef MEMORY_UNINITIALIZED_H_
 #define MEMORY_UNINITIALIZED_H_
 
-#include "traits.hpp"
+//#include "traits.hpp"
 #include "memory_construct.hpp"
 
 namespace lix
@@ -10,8 +10,9 @@ namespace lix
 template<class InputIterator, class ForwardIterator>
 ForwardIterator uninitialized_copy(InputIterator first,
 	InputIterator last,ForwardIterator result) {
-	//TODO
-	return nullptr;
+	auto itr = result;
+	for (; first != last; ++first, ++itr) construct(&*itr, *first);
+	return itr;
 }
 
 //template<class ForwardIterator, class size, class T1, class T2>
