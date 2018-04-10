@@ -32,6 +32,9 @@
     <ClInclude Include="src\memory_uninitialized.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\list.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">

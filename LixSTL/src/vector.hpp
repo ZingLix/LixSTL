@@ -25,7 +25,10 @@ namespace lix
 		vector(int n, const T& value) { fill_initialize(n, value); }
 		vector(vector<T, Alloc>& vec);
 		explicit vector(size_type n) { fill_initialize(n, T()); }
-		~vector() { destroy(_start, _end); }
+		~vector() {
+			destroy(_start, _end);
+			allocator::deallocate(_start, _tail - _start);
+		}
 
 		iterator begin() { return _start; }
 		iterator end() { return _end; }

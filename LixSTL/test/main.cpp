@@ -1,6 +1,8 @@
 #include "../src/vector.hpp"
-#include <vector>
+//#include <vector>
 #include <iostream>
+//#include <list>
+#include "../src/list.hpp"
 
 template<class T>
 void print(lix::vector<T> vec) {
@@ -15,8 +17,9 @@ struct x
 };
 
 int main(int argc, char* argv[]) {
-	lix::vector<x> v(30000);
-
+	lix::vector<x> *v=new lix::vector<x>(30000);
+	lix::list<int> l{};
+	l.begin();
 	/*v.push_back(3);
 
 	for (int i = 0; i < 10; i++) v.push_back(i);
@@ -25,6 +28,7 @@ int main(int argc, char* argv[]) {
 	x.erase(x.begin() + 3,x.end()-3);
 	print(x);*/
 	//print(x);
+	delete v;
 	system("pause");
 
 }
