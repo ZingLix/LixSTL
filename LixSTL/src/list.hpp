@@ -107,9 +107,19 @@ protected:
 		node = get_node();
 		node->next = node;
 		node->prev = node;
-		node->data = nullptr;
+		//node->data = nullptr;
 	}
-
+	void transfer(iterator pos, iterator first, iterator last) {
+		if (pos != last) {
+			last.node->prev->next = pos.node;
+			first.node->prev->next = last.node;
+			pos.node->prev->next = first.node;
+			auto tmp = pos.node->prev;
+			pos.node->prev = last.node->prev;
+			last.node->prev = first.node->prev;
+			first.node->prev = tmp;
+		}
+	}
 public:
 	list() { init(); }
 
@@ -169,6 +179,27 @@ public:
 			next = first;
 		}
 	}
+
+	void splice(iterator pos,list& l) {
+		if (!l.empty()) transfer(pos, l.begin(), l.end());
+	}
+
+	void splice(iterator pos,iterator itr,list&) {
+		iterator i = itr;
+		++i;
+		if(pos==i||pos==itr) return;
+		transfer(pos, itr, i);
+	}
+
+	void splice(iterator pos,iterator first,iterator last) {
+		if (first != last) transfer(pos, first, last);
+	}
+
+	//TODO
+	//void merge(list& x);
+	//void reverse();
+	//void sort();
+
 };
 
 

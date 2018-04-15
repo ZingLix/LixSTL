@@ -74,9 +74,9 @@ namespace lix
 	}
 
 	template<class InputIterator>
-	iterator_traits<InputIterator>::difference_type
+	typename iterator_traits<InputIterator>::difference_type
 	_distance(InputIterator first,InputIterator last,input_iterator_tag) {
-		iterator_traits<InputIterator>::difference_type n = 0;
+		typename iterator_traits<InputIterator>::difference_type n = 0;
 		while(first!=last) {
 			++first; ++n;
 		}
@@ -84,13 +84,13 @@ namespace lix
 	}
 
 	template<class InputIterator>
-	iterator_traits<InputIterator>::difference_type
+	typename iterator_traits<InputIterator>::difference_type
 	_distance(InputIterator first, InputIterator last, random_access_iterator_tag) {
 		return last - first;
 	}
 
 	template<class InputIterator>
-	iterator_traits<InputIterator>::difference_type
+	typename iterator_traits<InputIterator>::difference_type
 	distance(InputIterator first,InputIterator last) {
 		typedef typename iterator_traits<InputIterator>::iterator_category category;
 		return _distance(first, last, category());

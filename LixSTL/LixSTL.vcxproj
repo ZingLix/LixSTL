@@ -117,6 +117,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\memory" />
+    <ClInclude Include="src\algorithm.hpp" />
+    <ClInclude Include="src\deque.hpp" />
     <ClInclude Include="src\list.hpp" />
     <ClInclude Include="src\memory_alloc.hpp" />
     <ClInclude Include="src\memory_construct.hpp" />

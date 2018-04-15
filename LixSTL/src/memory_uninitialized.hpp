@@ -33,6 +33,11 @@ ForwardIterator uninitialized_fill_n(ForwardIterator first,Size n,const T& x) {
 	return itr;
 }
 
+template<class ForwardIterator, class T>
+void uninitialized_fill(ForwardIterator first,ForwardIterator last,const T& x) {
+	ForwardIterator cur = first;
+	for (; cur != last; ++cur) construct(cur, x);
+}
 
 
 

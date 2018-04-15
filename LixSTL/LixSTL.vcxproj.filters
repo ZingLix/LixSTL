@@ -35,6 +35,12 @@
     <ClInclude Include="src\list.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\deque.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithm.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
