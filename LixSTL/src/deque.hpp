@@ -133,6 +133,10 @@ namespace lix
 			return data_allocator::allocate(buffer_size());
 		}
 
+		void deallocate_node(ptr itr) {
+			data_allocator::deallocate(itr);
+		}
+
 		void create_map_and_nodes(size_type elements_num) {
 			size_type nodes_num = elements_num / buffer_size() + 1;
 			map_size = initial_map_size() < nodes_num ? nodes_num + 2 : initial_map_size();
@@ -243,6 +247,50 @@ namespace lix
 			else {
 				push_front_aux(t);
 			}
+		}
+
+		void pop_back_aux() {
+			deallocate_node(finish.first);
+			finish.set_node(finish.node - 1);
+			finish.cur = finish.last - 1;
+			destroy(finish.cur);
+		}
+		void pop_back() {
+			if(finish.cur!=finish.first) {
+				--finish.cur;
+				destroy(finish.cur);
+			} else {
+				pop_back_aux();
+			}
+		}
+		void pop_front_aux() {
+			destroy(start.cur);
+			deallocate_node(start.first);
+			start.set_node(start.node +1);
+			start.cur = start.first;
+		}
+		void pop_front() {
+			if(start.cur!=start.last-1) {
+				destroy(start.cur);
+				++start.cur;
+			}else {
+				pop_front_aux();
+			}
+		}
+
+		void clear() {
+			for(map_pointer node=start.node+1;node<finish.node;++node) {
+				destroy(*node, *node + buffer_size());
+				data_allocator::deallocate(*node, buffer_size());
+			}
+			if(start.node!=finish.node) {
+				destroy(start.cur, start.last);
+				destroy(finish.first, finish.cur);
+				data_allocator::deallocate(finish.first, buffer_size());
+			}else {
+				destroy(start.cur, finish.cur);
+			}
+			finish = start;
 		}
 	};
 
