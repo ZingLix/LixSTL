@@ -87,7 +87,7 @@ namespace lix
 			if (static_cast<size_type>(_tail - _end) >= n) {
 				auto elems_after = _end - pos;
 				iterator old_end = _end;
-				if (old_end > n) {
+				if (elems_after > n) {
 					uninitialized_copy(_end - n, _end, _end);
 					_end += n;
 					std::copy_backward(pos, old_end - n, old_end);
@@ -109,10 +109,8 @@ namespace lix
 
 	template <class T, class Alloc>
 	void vector<T, Alloc>::pop_back() {
-
 		--_end;
 		destroy(_end);
-
 	}
 
 	template <class T, class Alloc>
