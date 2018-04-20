@@ -14,12 +14,12 @@ void construct(T1* p, const T2& value) {
 
 template<class T>
 void destroy(T* ptr) {
-	ptr->~T();
+	if(ptr!=nullptr) ptr->~T();
 }
 
 template<class ForwardIterator, class T>
 void _destroy(ForwardIterator first, ForwardIterator last, T*) {
-	while (first <= last) {
+	while (first < last) {
 		destroy(&*first);
 		++first;
 	}

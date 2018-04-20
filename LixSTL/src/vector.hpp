@@ -87,19 +87,19 @@ namespace lix
 			if (static_cast<size_type>(_tail - _end) >= n) {
 				auto elems_after = _end - pos;
 				iterator old_end = _end;
-				if (elems_after > n) {
+			//	if (elems_after > n) {
 					uninitialized_copy(_end - n, _end, _end);
 					_end += n;
 					std::copy_backward(pos, old_end - n, old_end);
 					std::fill(pos, pos + n, value);
-				}
-				else {
-					uninitialized_copy(_end, n - elems_after, value);
+			//	}
+			//	else {
+		/*			uninitialized_copy(_end, n - elems_after, value);
 					_end += n - elems_after;
 					uninitialized_copy(pos, old_end, _end);
 					_end += elems_after;
 					std::fill(pos, old_end, value);
-				}
+				}*/
 			}
 			else {
 				insert_aux(pos, n, value);
