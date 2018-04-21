@@ -12,6 +12,9 @@
     <Filter Include="test">
       <UniqueIdentifier>{9aba5ba0-cae4-4ffb-b2e9-b861bd4d126b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\memory">
+      <UniqueIdentifier>{f0b61d87-b599-4885-b762-5da6daae228d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\traits.hpp">
@@ -40,6 +43,18 @@
     </ClInclude>
     <ClInclude Include="src\algorithm.hpp">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\pointer_traits.hpp">
+      <Filter>src\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\memory_utility.hpp">
+      <Filter>src\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\allocator.hpp">
+      <Filter>src\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\allocator_traits.hpp">
+      <Filter>src\memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

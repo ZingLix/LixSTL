@@ -14,11 +14,12 @@ namespace lix
 	{
 	public:
 		typedef T value_type;
-		typedef value_type* ptr;
-		typedef value_type* iterator;
-		typedef value_type& ref;
+		typedef value_type* pointer;
+		typedef value_type& reference;
 		typedef size_t size_type;
 		typedef ptrdiff_t difference_type;
+
+		typedef value_type* iterator;
 
 		vector() :_start(nullptr), _end(nullptr), _tail(nullptr) {}
 		vector(size_type n, const T&value) { fill_initialize(n, value); }
@@ -35,11 +36,11 @@ namespace lix
 		size_type size() const { return static_cast<size_type>(_end - _start); }
 		size_type capacity() const { return static_cast<size_type>(_tail - _start); }
 		bool empty() { return _start == _end; }
-		ref operator[](size_type n) { return *(_start + n); }
+		reference operator[](size_type n) { return *(_start + n); }
 		vector<T, Alloc>& operator=(const vector<T, Alloc> vec);
 
-		ref front() { return *_start; }
-		ref back() { return *(_end - 1); }
+		reference front() { return *_start; }
+		reference back() { return *(_end - 1); }
 		void push_back(const T& x);
 		void pop_back();
 
