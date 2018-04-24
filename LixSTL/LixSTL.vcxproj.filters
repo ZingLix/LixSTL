@@ -15,9 +15,6 @@
     <Filter Include="src\memory">
       <UniqueIdentifier>{f0b61d87-b599-4885-b762-5da6daae228d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Outdated">
-      <UniqueIdentifier>{d694263b-dbb7-4ab4-aa9e-f0365938d2a2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\container">
       <UniqueIdentifier>{8257df98-ecea-44c5-98da-b177fc5ce8ea}</UniqueIdentifier>
     </Filter>
@@ -26,6 +23,9 @@
     </Filter>
     <Filter Include="src\traits">
       <UniqueIdentifier>{7ebfed4e-26e8-4846-a792-a76310849d71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Deprecated">
+      <UniqueIdentifier>{d694263b-dbb7-4ab4-aa9e-f0365938d2a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,13 +48,13 @@
       <Filter>src\memory</Filter>
     </ClInclude>
     <ClInclude Include="src\memory_uninitialized.hpp">
-      <Filter>src\Outdated</Filter>
+      <Filter>src\Deprecated</Filter>
     </ClInclude>
     <ClInclude Include="src\memory_alloc.hpp">
-      <Filter>src\Outdated</Filter>
+      <Filter>src\Deprecated</Filter>
     </ClInclude>
     <ClInclude Include="src\memory_construct.hpp">
-      <Filter>src\Outdated</Filter>
+      <Filter>src\Deprecated</Filter>
     </ClInclude>
     <ClInclude Include="src\container\deque.hpp">
       <Filter>src\container</Filter>

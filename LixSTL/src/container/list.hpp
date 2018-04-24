@@ -2,7 +2,7 @@
 #define LIST_H_
 
 #include "../include/memory"
-#include "traits.hpp"
+#include "../traits/iterator_traits.hpp"
 
 namespace lix
 {
@@ -24,8 +24,8 @@ struct _list_iterator
 
 	typedef bidirectional_iterator_tag iterator_category;
 	typedef T value_type;
-	typedef Ptr ptr;
-	typedef Ref ref;
+	typedef Ptr pointer;
+	typedef Ref reference;
 	typedef _list_node<T>* link_type;
 	typedef size_t size_type;
 	typedef ptrdiff_t difference_type;

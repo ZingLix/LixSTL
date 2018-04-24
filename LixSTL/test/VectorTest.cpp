@@ -1,6 +1,8 @@
 #pragma warning(disable: 4251)
 #pragma warning(disable: 4275)
+
 #define _SCL_SECURE_NO_WARNINGS
+
 #include <gtest/gtest.h>
 #include "../include/vector"
 #include <random>
@@ -46,6 +48,34 @@ TEST(VectorTest, Push_and_Pop)
 		lixvec.pop_back();
 	}
 	EXPECT_EQ(lixvec.empty(), true);
+}
+
+TEST(VectorTest, ItrInit) {
+	std::vector<int> stdvec;
+	lix::vector<int> lixvec;
+	std::default_random_engine generator;
+	std::uniform_int_distribution<int> distribution(0, 10000);
+	int dice_roll = distribution(generator);
+	for (int i = 0; i < 50000; i++) {
+		dice_roll = distribution(generator);
+		stdvec.push_back(dice_roll);
+		lixvec.push_back(dice_roll);
+	}
+	std::vector<int> stdvec2(stdvec.begin(), stdvec.end());
+	lix::vector<int> lixvec2(lixvec.begin(), lixvec.end());
+	vectorEqualTest(lixvec2, stdvec2);
+
+	std::vector<std::string> stdvecstr;
+	lix::vector<std::string> lixvecstr;
+
+	stdvecstr.push_back("test1");
+	stdvecstr.push_back("vecstr");
+	lixvecstr.push_back("test1");
+	lixvecstr.push_back("vecstr");
+
+	std::vector<std::string> stdvecstr2(stdvecstr.begin(), stdvecstr.end());
+	lix::vector<std::string> lixvecstr2(lixvecstr.begin(), lixvecstr.end());
+	vectorEqualTest(lixvec2, stdvec2);
 }
 
 TEST(VectorTest, Iterator)
@@ -139,4 +169,11 @@ TEST(VectorTest,Insert) {
 		stdvec.insert(stdvec.begin() + idx, n, val);
 		vectorEqualTest(lixvec, stdvec);
 	}
+}
+
+TEST(VectorTest,Container) {
+	lix::vector<std::string> vec;
+	vec.push_back("asdf");
+	vec.push_back("sadfqwer");
+	vec.insert(vec.begin(), 1, "asdfasf");
 }

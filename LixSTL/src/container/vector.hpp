@@ -1,8 +1,6 @@
 #ifndef VECTOR_H_
 #define VECTOR_H_
 
-#define _SCL_SECURE_NO_WARNINGS
-
 #include "../../include/memory"
 #include <cstddef>
 #include <algorithm>
@@ -13,25 +11,54 @@ namespace lix
 	class vector
 	{
 	public:
-		typedef T value_type;
-		typedef value_type* pointer;
-		typedef value_type& reference;
-		typedef size_t size_type;
-		typedef ptrdiff_t difference_type;
+		using value_type = T;
+		using allocator_type = Alloc;
+		using size_type = size_t;
+		using difference_type = ptrdiff_t;
+		using reference = value_type & ;
+		using const_reference = const value_type&;
+		using pointer = typename allocator_traits<Alloc>::pointer ;
+		using const_pointer = typename allocator_traits<Alloc>::const_pointer;
+		using iterator = value_type * ;
+		using const_iterator = const iterator;
+		using reverse_iterator = std::reverse_iterator<iterator>;
+		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-		typedef value_type* iterator;
+		vector() noexcept(noexcept(Alloc())) :allocator_(),_start(nullptr), _end(nullptr), _tail(nullptr) {}
+		explicit vector(const Alloc& alloc) noexcept: _start(nullptr), _end(nullptr), _tail(nullptr) {
+			allocator_ = alloc;
+		}
+		vector(size_type n, const T& value, const Alloc& alloc = Alloc()) {
+			allocator_ = alloc;
+			fill_initialize(n, value);
+		}
 
-		vector() :_start(nullptr), _end(nullptr), _tail(nullptr) {}
-		vector(size_type n, const T&value) { fill_initialize(n, value); }
+		template< class InputIt >
+		vector(InputIt first, InputIt last, const Alloc& alloc = Alloc()) {
+			allocator_ = alloc;
+			size_type count = last - first;
+			_start = allocator_traits<Alloc>::allocate(allocator_, count);
+			_end = _start + count;
+			_tail = _end;
+			for(auto itr=_start;first!=last;++itr,++first) {
+				allocator_traits<Alloc>::construct(allocator_, itr, *first);
+			}
+
+		}
+
 		vector(int n, const T& value) { fill_initialize(n, value); }
 		vector(vector<T, Alloc>& vec);
 		explicit vector(size_type n) { fill_initialize(n, T()); }
+
 		~vector() {
 			for(auto itr=_start;itr!=_end;++itr) {
 				allocator_traits<Alloc>::destroy(allocator_, itr);
 			}
-			Alloc::deallocate(_start, _tail - _start);
-			//allocator::deallocate(_start, _tail - _start);
+			allocator_traits<Alloc>::deallocate(allocator_, _start, _tail - _start);
+		}
+
+		allocator_type get_allocator() const {
+			return allocator_;
 		}
 
 		iterator begin() { return _start; }
