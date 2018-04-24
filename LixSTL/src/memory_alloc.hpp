@@ -1,7 +1,7 @@
 #ifndef MEMORY_CONSTRUCT
 #define MEMORY_CONSTRUCT
 
-namespace lix
+namespace lix_out
 {
 
 

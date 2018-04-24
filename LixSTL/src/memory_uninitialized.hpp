@@ -4,7 +4,7 @@
 //#include "traits.hpp"
 #include "memory_construct.hpp"
 
-namespace lix
+namespace lix_out
 {
 
 template<class InputIterator, class ForwardIterator>

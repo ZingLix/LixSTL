@@ -6,43 +6,11 @@ namespace lix
 	template<class... _Types>
 	using void_t = void;
 
-	template<class T>
-	struct _first_parameter;
-
-	template<template<class, class...> class T,
-		class First, class... Other>
-		struct _first_parameter<T<First, Other...>>
-	{
-		using type = First;
-	};
-
-	template<class T, class = void>
-	struct _element_type
-	{
-		using type = typename _first_parameter<T>::type;
-	};
-
-	template<class T>
-	struct _element_type<T, void_t<typename T::element_type>>
-	{
-		using type = typename T::element_type;
-	};
-
-
-	template<class T, class = void>
-	struct _ptr_difference_type
-	{
-		using type = ptrdiff_t;
-	};
-
-	template<class T>
-	struct _ptr_difference_type<T, void_t<typename T::difference_type>>
-	{
-		using type = typename T::difference_type;
-	};
-
 	template<class NewFirst, class T>
-	struct _replace_first_parameter;
+	struct _replace_first_parameter
+	{
+		using type = NewFirst;
+	};
 
 	template<class NewFirst, template<class, class...>class T,
 		class OldFirst, class ... Other>
@@ -51,20 +19,12 @@ namespace lix
 		using type = T<NewFirst, Other...>;
 	};
 
-	template<class T, class Other, class = void>
-	struct _rebind_alias
+	template< class T >
+	T* addressof(T& arg)
 	{
-		using type = typename _replace_first_parameter<Other, T>::type;
-	};
-
-	template<class T, class Other>
-	struct _rebind_alias<T, Other, void_t<typename T::template rebind<Other>>>
-	{
-		using type = typename T::template rebind<Other>;
-	};
-
-	
-
-
+		return reinterpret_cast<T*>(
+			&const_cast<char&>(
+				reinterpret_cast<const volatile char&>(arg)));
+	}
 }
 #endif

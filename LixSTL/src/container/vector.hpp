@@ -3,13 +3,13 @@
 
 #define _SCL_SECURE_NO_WARNINGS
 
-#include "../include/memory"
+#include "../../include/memory"
 #include <cstddef>
 #include <algorithm>
 
 namespace lix
 {
-	template<class T, class Alloc = _alloc_template>
+	template<class T, class Alloc = allocator<T>>
 	class vector
 	{
 	public:
@@ -27,8 +27,11 @@ namespace lix
 		vector(vector<T, Alloc>& vec);
 		explicit vector(size_type n) { fill_initialize(n, T()); }
 		~vector() {
-			destroy(_start, _end);
-			allocator::deallocate(_start, _tail - _start);
+			for(auto itr=_start;itr!=_end;++itr) {
+				allocator_traits<Alloc>::destroy(allocator_, itr);
+			}
+			Alloc::deallocate(_start, _tail - _start);
+			//allocator::deallocate(_start, _tail - _start);
 		}
 
 		iterator begin() { return _start; }
@@ -57,7 +60,8 @@ namespace lix
 		void insert_aux(iterator pos, const T& value);
 
 	private:
-		typedef simple_alloc<T, Alloc> allocator;
+		typedef Alloc allocator;
+		Alloc allocator_;
 		iterator _start; //数据头
 		iterator _end;   //数据尾
 		iterator _tail;  //空间尾
@@ -70,14 +74,17 @@ namespace lix
 			std::copy(pos + 1, _end, pos);
 		}
 		--_end;
-		destroy(_end);
+		allocator_traits<Alloc>::destroy(allocator_, _end);
 		return pos;
 	}
 
 	template <class T, class Alloc>
 	typename vector<T, Alloc>::iterator vector<T, Alloc>::erase(iterator first, iterator last) {
 		iterator i = std::copy(last, _end, first);
-		destroy(i, _end);
+		for(auto tmp=i;i!=_end;++i) {
+			allocator_traits<Alloc>::destroy(allocator_, tmp);
+		}
+		//destroy(i, _end);
 		_end = _end - (last - first);
 		return first;
 	}
@@ -111,7 +118,7 @@ namespace lix
 	template <class T, class Alloc>
 	void vector<T, Alloc>::pop_back() {
 		--_end;
-		destroy(_end);
+		allocator_traits<Alloc>::destroy(allocator_, _end);
 	}
 
 	template <class T, class Alloc>
@@ -120,7 +127,7 @@ namespace lix
 			insert_aux(end(), x);
 		}
 		else {
-			construct(_end, x);
+			allocator_traits<Alloc>::construct(allocator_, _end, x);
 			++_end;
 		}
 	}
@@ -130,13 +137,14 @@ namespace lix
 		const size_t old_size = size();
 		const size_t new_size = old_size == 0 ? 1 : old_size * 2;
 		auto new_start = allocator::allocate(new_size);
-		auto new_end = uninitialized_copy(_start, pos, new_start);
+		auto new_end = lix::uninitialized_copy(_start, pos, new_start);
 		while (n--) {
-			construct(new_end, value);
+			allocator_traits<Alloc>::construct(allocator_,new_end, value);
 			++new_end;
 		}
-		new_end = uninitialized_copy(pos, _end, new_end);
-		destroy(_start, _end);
+		new_end = lix::uninitialized_copy(pos, _end, new_end);
+		for(auto tmp=_start;tmp!=_end;++tmp)
+		allocator_traits<Alloc>::destroy(allocator_,tmp);
 		deallocate();
 		_start = new_start;
 		_end = new_end;
@@ -176,7 +184,7 @@ namespace lix
 		_tail = _end;
 		auto tmp = _start;
 		auto it = vec.begin();
-		for (; it != vec.end(); ++it, ++tmp) construct(&*tmp, *it);
+		for (; it != vec.end(); ++it, ++tmp) allocator_traits<Alloc>::construct(allocator_, &*tmp, *it);
 	}
 
 	template <class T, class Alloc>
@@ -186,7 +194,7 @@ namespace lix
 		_tail = _end;
 		auto tmp = _start;
 		auto it = vec.begin();
-		for (; it != vec.end(); ++it, ++tmp) construct(&*tmp, *it);
+		for (; it != vec.end(); ++it, ++tmp) allocator_traits<Alloc>::construct(allocator_, &*tmp, *it);
 		return *this;
 	}
 

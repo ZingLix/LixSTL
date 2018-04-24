@@ -18,15 +18,15 @@ struct allocator
 	typedef T value_type;
 
 	static T* allocate(size_t n) {
-		void *address = ::operator new(n);
+		void *address = ::operator new(n*sizeof(T));
 		//TODO 内存分配失败扔出异常
-		//if (address == nullptr) 
+		//if (address == nullptr) throw;
 		return static_cast<T*>(address);
 	}
 
 
 	static void deallocate(T *p, size_t) {
-		::operator delete(p);
+		::operator delete(static_cast<void*>(&*p));
 	}
 };
 

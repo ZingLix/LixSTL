@@ -1,4 +1,6 @@
 #pragma once
-#include "../src/memory_alloc.hpp"
-#include "../src/memory_construct.hpp"
-#include "../src/memory_uninitialized.hpp"
+#include "../src/memory/allocator.hpp"
+#include "../src/memory/allocator_traits.hpp"
+#include "../src/memory/memory_utility.hpp"
+#include "../src/memory/pointer_traits.hpp"
+#include "../src/memory/uninitialized.hpp"

@@ -2,9 +2,9 @@
 #define MEMORY_CONSTRUCT_H_
 
 #include <new>
-#include "traits.hpp"
+//#include "./traits/iterator_traits.hpp"
 
-namespace lix
+namespace lix_out
 {
 
 template<class T1, class T2>

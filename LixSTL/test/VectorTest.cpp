@@ -2,7 +2,7 @@
 #pragma warning(disable: 4275)
 #define _SCL_SECURE_NO_WARNINGS
 #include <gtest/gtest.h>
-#include "../src/vector.hpp"
+#include "../include/vector"
 #include <random>
 
 template<class T>

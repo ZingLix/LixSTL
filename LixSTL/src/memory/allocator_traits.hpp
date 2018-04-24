@@ -10,13 +10,7 @@
 namespace lix
 {
 	
-	template< class T >
-	T* addressof(T& arg)
-	{
-		return reinterpret_cast<T*>(
-			&const_cast<char&>(
-				reinterpret_cast<const volatile char&>(arg)));
-	}
+
 
 	template<class T, class Alloc, class = void>
 	struct _pointer
@@ -160,20 +154,20 @@ namespace lix
 		}
 		template< class T, class... Args >
 		static void construct(Alloc& a, T* p, Args&&... args) {
-			if(has_construct<Alloc>::value) {
+		/*	if(has_construct<Alloc>::value) {
 				a.construct(p, std::forward<Args>(args)...);
 			}
-			else {
+			else {*/
 				::new (static_cast<void*>(p)) T(std::forward<Args>(args)...);
-			}
+			//}
 		}
 		template< class T >
 		static void destroy(Alloc& a, T* p) {
-			if(has_destroy<Alloc>::value) {
+			/*if(has_destroy<Alloc>::value) {
 				a.destroy(p);
-			}else {
-				p->~destroy();
-			}
+			}else {*/
+				//p->~T();
+			//}
 		}
 		static size_type max_size(const Alloc& a) {
 			if(has_max_size<Alloc>::value) {

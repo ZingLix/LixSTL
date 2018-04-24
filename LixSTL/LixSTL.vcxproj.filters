@@ -15,34 +15,22 @@
     <Filter Include="src\memory">
       <UniqueIdentifier>{f0b61d87-b599-4885-b762-5da6daae228d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Outdated">
+      <UniqueIdentifier>{d694263b-dbb7-4ab4-aa9e-f0365938d2a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\container">
+      <UniqueIdentifier>{8257df98-ecea-44c5-98da-b177fc5ce8ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\algorithm">
+      <UniqueIdentifier>{03fe0b8e-01a5-4bcb-8e9a-82b8c19faad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\traits">
+      <UniqueIdentifier>{7ebfed4e-26e8-4846-a792-a76310849d71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\traits.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\memory_construct.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\memory_alloc.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="include\memory">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vector.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\memory_uninitialized.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\list.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\deque.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\algorithm.hpp">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\memory\pointer_traits.hpp">
       <Filter>src\memory</Filter>
@@ -56,6 +44,33 @@
     <ClInclude Include="src\memory\allocator_traits.hpp">
       <Filter>src\memory</Filter>
     </ClInclude>
+    <ClInclude Include="src\memory\uninitialized.hpp">
+      <Filter>src\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory_uninitialized.hpp">
+      <Filter>src\Outdated</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory_alloc.hpp">
+      <Filter>src\Outdated</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory_construct.hpp">
+      <Filter>src\Outdated</Filter>
+    </ClInclude>
+    <ClInclude Include="src\container\deque.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="src\container\list.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="src\container\vector.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithm\algorithm.hpp">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\traits\iterator_traits.hpp">
+      <Filter>src\traits</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
@@ -63,6 +78,9 @@
     </ClCompile>
     <ClCompile Include="test\VectorTest.cpp">
       <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="include\vector">
+      <Filter>include</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
