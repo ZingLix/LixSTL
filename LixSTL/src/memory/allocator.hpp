@@ -25,7 +25,7 @@ struct allocator
 	}
 
 
-	static void deallocate(T *p, size_t) {
+	static void deallocate(T *p, size_t=0) {
 		::operator delete(static_cast<void*>(&*p));
 	}
 };

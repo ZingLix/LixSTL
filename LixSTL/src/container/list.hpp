@@ -10,6 +10,9 @@ namespace lix
 template<class T>
 struct _list_node
 {
+	_list_node(T x):prev(nullptr),next(nullptr),data(x) {
+	}
+
 	typedef _list_node* ptr;
 	ptr prev;
 	ptr next;
@@ -23,6 +26,7 @@ struct _list_iterator
 	typedef _list_iterator<T, Ref, Ptr> self;
 
 	typedef bidirectional_iterator_tag iterator_category;
+
 	typedef T value_type;
 	typedef Ptr pointer;
 	typedef Ref reference;
@@ -38,8 +42,8 @@ struct _list_iterator
 
 	bool operator==(const self& x) const { return node == x.node; }
 	bool operator!=(const self& x) const { return node != x.node; }
-	ref operator*()const { return node->data; }
-	ptr operator->() const { return &(operator*()); }
+	reference operator*()const { return node->data; }
+	pointer operator->() const { return &(operator*()); }
 	self& operator++() {
 		node = node->next;
 		return *this;
@@ -63,51 +67,59 @@ struct _list_iterator
 
 
 
-template<class T,class Alloc=_alloc_template>
+template<class T,class Alloc=allocator<T>>
 class list
 {
 protected:
-	typedef _list_node<T> list_node;
-	typedef simple_alloc<list_node, Alloc> allocator;
+	using list_node = _list_node<T>;
+	using allocator = typename  allocator_traits<Alloc>::template rebind_alloc<_list_node<T>>;
+	using link_type = list_node * ;
+
 public:
-	typedef list_node* link_type;
-	typedef _list_iterator<T,T&,T*> iterator;
+	using value_type = T;
+	using allocator_type = Alloc;
+	using size_type = size_t;
+	using difference_type = ptrdiff_t;
+	using reference = value_type & ;
+	using const_reference = const value_type&;
+	using pointer = typename allocator_traits<Alloc>::pointer;
+	using const_pointer = typename allocator_traits<Alloc>::const_pointer;
+	using iterator = _list_iterator<T, reference, pointer>;
+	using const_iterator = const iterator;
+	using reverse_iterator = std::reverse_iterator<iterator>;
+	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-	typedef bidirectional_iterator_tag iterator_category;
-	typedef T value_type;
-	typedef _list_node<T>* ptr;
-	typedef _list_node<T>& ref;
-	typedef size_t size_type;
-	typedef ptrdiff_t difference_type;
 
+
+	allocator allocator_;
 	link_type node;
 
 	iterator begin() { return node->next; }
 	iterator end() { return node; }
 	bool empty() { return node->next == node; }
-	size_type size() const {
+	size_type size() {
 		return distance(begin(), end());
 	}
-	ref front() { return *begin(); }
-	ref back() { return *(--end()); }
+	reference front() { return *begin(); }
+	reference back() { return *(--end()); }
 	
 protected:
-	link_type get_node() { return allocator::allocate(); }
+	link_type get_node() { return allocator::allocate(1); }
 	void put_node(link_type p) { allocator::deallocate(p); }
 	link_type create_node(const T& x) {
 		link_type p = get_node();
-		construct(p, x);
+		allocator_traits<allocator>::construct(allocator_, p, x);
 		return p;
 	}
 	void destroy_node(link_type p) {
-		destroy(&p->data);
+		allocator_traits<allocator>::destroy(allocator_, p);
 		put_node(p);
 	}
 	void init() {
+		allocator_ = allocator();
 		node = get_node();
 		node->next = node;
 		node->prev = node;
-		//node->data = nullptr;
 	}
 	void transfer(iterator pos, iterator first, iterator last) {
 		if (pos != last) {
@@ -137,7 +149,7 @@ public:
 		link_type next = pos.node->next;
 		prev->next = next;
 		next->prev = prev;
-		destroy_node(pos);
+		destroy_node(pos.node);
 		return next;
 	}
 
@@ -150,7 +162,7 @@ public:
 		link_type itr = node->next;
 		while(itr!=node) {
 			link_type tmp = itr;
-			++itr;
+			itr=itr->next;
 			destroy_node(tmp);
 		}
 		node->next = node;

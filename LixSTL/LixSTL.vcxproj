@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\vector" />
+    <ClCompile Include="test\ListTest.cpp" />
     <ClCompile Include="test\main.cpp" />
     <ClCompile Include="test\VectorTest.cpp" />
   </ItemGroup>

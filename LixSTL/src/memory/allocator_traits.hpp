@@ -87,7 +87,7 @@ namespace lix
 	template<class T, class Alloc, class = void>
 	struct _rebind_alloc
 	{
-		using type = _replace_first_parameter<T,Alloc>;
+		using type = typename _replace_first_parameter<T,Alloc>::type;
 	};
 
 	template<class T, class Alloc>
