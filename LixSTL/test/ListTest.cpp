@@ -1,8 +1,6 @@
 #pragma warning(disable: 4251)
 #pragma warning(disable: 4275)
 
-#define _SCL_SECURE_NO_WARNINGS
-
 #include <gtest/gtest.h>
 
 #include <random>
@@ -23,7 +21,7 @@ TEST(ListTest,Init) {
 	lix::list<int> lixlist;
 	std::list<int> stdlist;
 
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 
@@ -40,7 +38,7 @@ TEST(ListTest, Func_back_and_front) {
 	lix::list<int> lixlist;
 	std::list<int> stdlist;
 
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 
@@ -57,7 +55,7 @@ TEST(ListTest, Func_back_and_front) {
 TEST(ListTest, Func_clear) {
 	lix::list<int> lixlist;
 
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 
@@ -75,7 +73,7 @@ TEST(ListTest, Func_erase) {
 	lix::list<int> lixlist;
 	std::list<int> stdlist;
 
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 
@@ -135,7 +133,7 @@ TEST(ListTest,Func_insert) {
 	lix::list<int> lixlist;
 	std::list<int> stdlist;
 
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 
@@ -162,7 +160,7 @@ TEST(ListTest,Func_pop) {
 	lix::list<int> lixlist;
 	std::list<int> stdlist;
 
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 
@@ -193,7 +191,7 @@ TEST(ListTest,Func_remove) {
 	lix::list<int> lixlist;
 	std::list<int> stdlist;
 
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 

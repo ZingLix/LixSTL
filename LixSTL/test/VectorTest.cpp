@@ -1,8 +1,6 @@
 #pragma warning(disable: 4251)
 #pragma warning(disable: 4275)
 
-#define _SCL_SECURE_NO_WARNINGS
-
 #include <gtest/gtest.h>
 #include "../include/vector"
 #include <random>
@@ -34,7 +32,7 @@ TEST(VectorTest, Push_and_Pop)
 {
 	std::vector<int> stdvec;
 	lix::vector<int> lixvec;
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 	for (int i = 0; i < 50000;i++) {
@@ -53,7 +51,7 @@ TEST(VectorTest, Push_and_Pop)
 TEST(VectorTest, ItrInit) {
 	std::vector<int> stdvec;
 	lix::vector<int> lixvec;
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 	for (int i = 0; i < 50000; i++) {
@@ -82,7 +80,7 @@ TEST(VectorTest, Iterator)
 {
 	std::vector<int> stdvec;
 	lix::vector<int> lixvec;
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 	for (int i = 0; i < 50000; i++) {
@@ -100,7 +98,7 @@ TEST(VectorTest, Iterator)
 TEST(VectorTest, SquareBracketOperator) {
 	std::vector<int> stdvec;
 	lix::vector<int> lixvec;
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 	for (int i = 0; i < 50000; i++) {
@@ -116,7 +114,7 @@ TEST(VectorTest, SquareBracketOperator) {
 TEST(VectorTest, Erase) {
 	std::vector<int> stdvec;
 	lix::vector<int> lixvec;
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 	for (int i = 0; i < 50000; i++) {
@@ -153,7 +151,7 @@ TEST(VectorTest, Erase) {
 TEST(VectorTest,Insert) {
 	std::vector<int> stdvec;
 	lix::vector<int> lixvec;
-	std::default_random_engine generator;
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 	for (int i = 0; i < 50000; i++) {

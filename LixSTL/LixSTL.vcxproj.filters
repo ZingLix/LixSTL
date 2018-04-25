@@ -85,6 +85,9 @@
     <ClCompile Include="test\ListTest.cpp">
       <Filter>test</Filter>
     </ClCompile>
+    <ClCompile Include="test\DequeTest.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
