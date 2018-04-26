@@ -134,6 +134,11 @@ protected:
 	}
 public:
 	list() { init(); }
+	~list() {
+		clear();
+
+		destroy_node(node);
+	}
 
 	iterator insert(iterator pos,const T& x) {
 		link_type tmp = create_node(x);

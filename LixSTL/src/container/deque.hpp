@@ -132,7 +132,34 @@ namespace lix
 			fill_initialize(0, value_type());
 		}
 		~deque() {
-			clear();
+			for (map_pointer node = start.node + 1; node<finish.node; ++node) {
+				auto p = *node;
+				for (; p != *node + buffer_size(); ++p) {
+					allocator_traits<Alloc>::destroy(alloc_, p);
+				}
+				data_allocator::deallocate(*node, buffer_size());
+			}
+			if (start.node != finish.node) {
+				auto p = start.cur;
+				for (; p != start.last; ++p) {
+					allocator_traits<Alloc>::destroy(alloc_, p);
+				}
+				data_allocator::deallocate(start.first, buffer_size());
+				p = finish.first;
+				for (; p != finish.cur; ++p) {
+					allocator_traits<Alloc>::destroy(alloc_, p);
+				}
+				data_allocator::deallocate(finish.first, buffer_size());
+			}
+			else {
+				auto p = start.cur;
+				for (; p != finish.cur; ++p) {
+					allocator_traits<Alloc>::destroy(alloc_, p);
+				}
+				data_allocator::deallocate(start.first, buffer_size());
+				//destroy(start.cur, finish.cur);
+			}
+			map_allocator::deallocate(map);
 		}
 
 		reference front() { return *start; }
@@ -163,8 +190,8 @@ namespace lix
 				for (; p != start.last; ++p) {
 					allocator_traits<Alloc>::destroy(alloc_, p);
 				}
-				p = finish.cur;
-				for (; p != finish.last; ++p) {
+				p = finish.first;
+				for (; p != finish.cur; ++p) {
 					allocator_traits<Alloc>::destroy(alloc_, p);
 				}
 				data_allocator::deallocate(finish.first, buffer_size());
@@ -264,7 +291,7 @@ namespace lix
 			auto new_num_nodes = old_num_nodes + new_nodes_num;
 			map_pointer new_nstart;
 			if(map_size>2*new_num_nodes) {
-				new_nstart = map + (max_size() - new_num_nodes) / 2 + (add_front ? new_nodes_num : 0);
+				new_nstart = map + (map_size - new_num_nodes) / 2 + (add_front ? new_nodes_num : 0);
 				if (new_nstart < start.node) {
 					std::copy(start.node, finish.node + 1, new_nstart);
 				} else {
@@ -286,7 +313,7 @@ namespace lix
 			if (new_nodes_num + 1 > map_size - (finish.node - map)) reallocate_map(new_nodes_num, false);
 		}
 		void reserve_map_at_front(size_type new_nodes_num = 1) {
-			if (new_nodes_num > static_cast<size_type>(start.node-map)) reallocate_map(new_nodes_num, false);
+			if (new_nodes_num > static_cast<size_type>(start.node-map)) reallocate_map(new_nodes_num, true);
 		}
 
 		void push_back_aux(const value_type& t) {

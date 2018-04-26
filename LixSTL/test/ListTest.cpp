@@ -179,7 +179,7 @@ TEST(ListTest,Func_pop) {
 	listEqualTest(lixlist, stdlist);
 
 	std::uniform_int_distribution<int> distributio2(0, static_cast<int>(lixlist.size()));
-	dice_roll = distributio1(generator);
+	dice_roll = distributio2(generator);
 	while (dice_roll--) {
 		lixlist.pop_front();
 		stdlist.pop_front();
