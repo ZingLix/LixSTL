@@ -26,6 +26,24 @@ TEST(VectorTest, Init) {
 	lix::vector<std::string> lixvec3(lixvec2);
 	std::vector<std::string> stdvec3(stdvec2);
 	vectorEqualTest(lixvec3, stdvec3);
+
+	lix::vector<int> lixvec4{ 3,5,7,8 };
+	std::vector<int> stdvec4{ 3,5,7,8 };
+	vectorEqualTest(lixvec4, stdvec4);
+
+	lix::vector<int> lixvec5(lixvec4.begin(), lixvec4.end());
+	std::vector<int> stdvec5(stdvec4.begin(), stdvec4.end());
+	vectorEqualTest(lixvec5, stdvec5);
+
+	lix::vector<int> lixvec6 = std::move(lixvec4);
+	std::vector<int> stdvec6 = std::move(stdvec4);
+	vectorEqualTest(lixvec6, stdvec6);
+	EXPECT_EQ(lixvec4.empty(), true);
+
+	lix::vector<int> lixvec7(2);
+	std::vector<int> stdvec7(2);
+	vectorEqualTest(lixvec7, stdvec7);
+
 }
 
 TEST(VectorTest, Push_and_Pop)
@@ -108,6 +126,7 @@ TEST(VectorTest, SquareBracketOperator) {
 	}
 	for(size_t i=0;i<lixvec.size();++i) {
 		EXPECT_EQ(stdvec[i], lixvec[i]);
+		EXPECT_EQ(stdvec.at(i), lixvec.at(i));
 	}
 }
 
@@ -174,4 +193,173 @@ TEST(VectorTest,Container) {
 	vec.push_back("asdf");
 	vec.push_back("sadfqwer");
 	vec.insert(vec.begin(), 1, "asdfasf");
+}
+
+TEST(VectorTest,operator_equal) {
+	lix::vector<int> vec1(30, 5);
+
+	lix::vector<int> vec2;
+	vec2.push_back(3);
+	vec2.push_back(6);
+	vec2.push_back(9);
+	vec1 = vec2;
+
+	EXPECT_EQ(vec1[0], 3);
+	EXPECT_EQ(vec1[1], 6);
+	EXPECT_EQ(vec1[2], 9);
+	EXPECT_EQ(vec1.size(), 3);
+	EXPECT_EQ(vec2[0], 3);
+	EXPECT_EQ(vec2[1], 6);
+	EXPECT_EQ(vec2[2], 9);
+	EXPECT_EQ(vec2.size(), 3);
+	
+	lix::vector<int> vec3;
+	vec3.push_back(2);
+	vec3.push_back(4);
+	vec3.push_back(6);
+	vec3.push_back(8);
+	vec1 = std::move(vec3);
+
+	EXPECT_EQ(vec1[0], 2);
+	EXPECT_EQ(vec1[1], 4);
+	EXPECT_EQ(vec1[2], 6);
+	EXPECT_EQ(vec1.size(), 4);
+	EXPECT_EQ(vec3.size(), 0);
+
+	vec1 = { 1,2,3,4,5 };
+	EXPECT_EQ(vec1[0], 1);
+	EXPECT_EQ(vec1[1], 2);
+	EXPECT_EQ(vec1[2], 3);
+	EXPECT_EQ(vec1[3], 4);
+	EXPECT_EQ(vec1[4], 5);
+	EXPECT_EQ(vec1.size(), 5);
+//	EXPECT_EQ(vec3.size(), 0);
+}
+
+
+TEST(VectorTest, Assign) {
+	lix::vector<int> vec1;
+	vec1.push_back(3);
+	vec1.push_back(7);
+	vec1.assign(3, 10);
+	EXPECT_EQ(vec1[0], 10);
+	EXPECT_EQ(vec1[1], 10);
+	EXPECT_EQ(vec1[2], 10);
+	EXPECT_EQ(vec1.size(), 3);
+
+	lix::vector<int> vec2(6, 99);
+	vec2.assign(vec1.begin(), vec1.end());
+	EXPECT_EQ(vec2[0], 10);
+	EXPECT_EQ(vec2[1], 10);
+	EXPECT_EQ(vec2[2], 10);
+	EXPECT_EQ(vec2.size(), 3);
+
+	lix::vector<int> vec3(8, 34);
+	vec3.assign({ 3,6,9 });
+	EXPECT_EQ(vec3[0], 3);
+	EXPECT_EQ(vec3[1], 6);
+	EXPECT_EQ(vec3[2], 9);
+	EXPECT_EQ(vec3.size(), 3);
+}
+
+TEST(VectorTest,Reserve) {
+	lix::vector<int> lixvec{ 3,6,9 };
+	EXPECT_EQ(lixvec.size(), 3);
+	lixvec.reserve(100);
+	EXPECT_EQ(lixvec[0], 3);
+	EXPECT_EQ(lixvec[1], 6);
+	EXPECT_EQ(lixvec[2], 9);
+	EXPECT_EQ(lixvec.capacity(), 100);
+}
+
+TEST(VectorTest, Shrink) {
+	lix::vector<int> lixvec{ 3,6,9 };
+	EXPECT_EQ(lixvec.size(), 3);
+	lixvec.reserve(10000000);
+	lixvec.shrink_to_fit();
+	EXPECT_EQ(lixvec[0], 3);
+	EXPECT_EQ(lixvec[1], 6);
+	EXPECT_EQ(lixvec[2], 9);
+	EXPECT_EQ(lixvec.capacity(), lixvec.size());
+}
+
+TEST(VectorTest, Emplace) {
+	struct test
+	{
+		test(int i):x(i+1){}
+		int x;
+	};
+	test ex(3);
+	lix::vector<test> lixvec(3, ex);
+	EXPECT_EQ(lixvec[1].x, 4);
+	lixvec.emplace(lixvec.begin() + 1, 5);
+	EXPECT_EQ(lixvec[1].x, 6);
+	lixvec.emplace_back(7);
+	EXPECT_EQ(lixvec[3].x, 8);
+	for (int i = 10; i < 50; ++i) lixvec.emplace_back(i);
+	EXPECT_EQ(lixvec.back().x, 50);
+}
+
+TEST(VectorTest,Swap) {
+	lix::vector<int> vec1{ 1,2,3 };
+	lix::vector<int> vec2{ 3,6,9 };
+	vec1.swap(vec2);
+	EXPECT_EQ(vec1[0], 3);
+	EXPECT_EQ(vec1[1], 6);
+	EXPECT_EQ(vec1[2], 9);
+	EXPECT_EQ(vec2[0], 1);
+	EXPECT_EQ(vec2[1], 2);
+	EXPECT_EQ(vec2[2], 3);
+}
+
+TEST(VectorTest,Resize) {
+	lix::vector<int> vec1{ 1,2 };
+	vec1.resize(10);
+	EXPECT_EQ(vec1[0], 1);
+	EXPECT_EQ(vec1[1], 2);
+	for (int i = 2; i < 10; ++i) EXPECT_EQ(vec1[i], 0);
+	EXPECT_EQ(vec1.size(), 10);
+	EXPECT_EQ(vec1.capacity(), 10);
+
+	for (int i = 0; i < 8; ++i) vec1.pop_back();
+	EXPECT_EQ(vec1.size(), 2);
+	EXPECT_EQ(vec1[0], 1);
+	EXPECT_EQ(vec1[1], 2);
+
+	vec1.resize(5);
+	for (int i = 2; i < 5; ++i) EXPECT_EQ(vec1[i], 0);
+	EXPECT_EQ(vec1.size(), 5);
+	EXPECT_EQ(vec1.capacity(), 5);
+
+	lix::vector<int> vec2{ 1,2,3,4,5,6,7,8,9 };
+	vec2.resize(2);
+	EXPECT_EQ(vec2[0], 1);
+	EXPECT_EQ(vec2[1], 2);
+	EXPECT_EQ(vec2.size(), 2);
+	EXPECT_EQ(vec2.capacity(), 2);
+
+	lix::vector<int> vec3{ 1,2 };
+	vec3.resize(15,41);
+	EXPECT_EQ(vec3[0], 1);
+	EXPECT_EQ(vec3[1], 2);
+	for (int i = 2; i < 10; ++i) EXPECT_EQ(vec3[i], 41);
+	EXPECT_EQ(vec3.size(), 15);
+	EXPECT_EQ(vec3.capacity(), 15);
+
+	for (int i = 0; i < 13; ++i) vec3.pop_back();
+	EXPECT_EQ(vec3.size(), 2);
+	EXPECT_EQ(vec3[0], 1);
+	EXPECT_EQ(vec3[1], 2);
+
+	vec3.resize(5,55);
+	for (int i = 2; i < 5; ++i) EXPECT_EQ(vec3[i], 55);
+	EXPECT_EQ(vec3.size(), 5);
+	EXPECT_EQ(vec3.capacity(), 5);
+}
+
+TEST(VectorTest, Clear) {
+	lix::vector<int> vec(10, 10);
+	vec.clear();
+	EXPECT_EQ(vec.size(), 0);
+	EXPECT_EQ(vec.capacity(), 10);
 }

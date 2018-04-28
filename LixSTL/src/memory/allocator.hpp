@@ -1,6 +1,7 @@
 #ifndef ALLOCATOR_H_
 #define ALLOCATOR_H_
 #include <new>
+#include "../traits/iterator_traits.hpp"
 
 namespace lix
 {
@@ -15,7 +16,9 @@ struct allocator
 
 	~allocator(){}
 
-	typedef T value_type;
+	using value_type = T;
+	using propagate_on_container_move_assignment = true_type;
+	using is_always_equal = true_type;
 
 	static T* allocate(size_t n) {
 		void *address = ::operator new(n*sizeof(T));
@@ -30,6 +33,15 @@ struct allocator
 	}
 };
 
+template< class T1, class T2 >
+bool operator==(const allocator<T1>& lhs, const allocator<T2>& rhs) {
+	return true;
+}
+
+template< class T1, class T2 >
+bool operator!=(const allocator<T1>& lhs, const allocator<T2>& rhs) {
+	return false;
+}
 
 }
 

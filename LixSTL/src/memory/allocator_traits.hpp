@@ -96,6 +96,53 @@ namespace lix
 		using type = typename Alloc::template rebind<T>::other;
 	};
 
+	template<class T, class Alloc,class =void>
+	struct _propagate_on_container_copy_assignment
+	{
+		using type = false_type;
+	};
+
+	template<class T, class Alloc>
+	struct _propagate_on_container_copy_assignment<T,Alloc,void_t<typename Alloc::propagate_on_container_copy_assignment>>
+	{
+		using type = typename Alloc::propagate_on_container_copy_assignment;
+	};
+
+	template<class T, class Alloc, class = void>
+	struct _propagate_on_container_move_assignment
+	{
+		using type = false_type;
+	};
+
+	template<class T, class Alloc>
+	struct _propagate_on_container_move_assignment<T, Alloc, void_t<typename Alloc::propagate_on_container_move_assignment>>
+	{
+		using type = typename Alloc::propagate_on_container_move_assignment;
+	};
+
+	template<class T, class Alloc, class = void>
+	struct _propagate_on_container_swap
+	{
+		using type = false_type;
+	};
+
+	template<class T, class Alloc>
+	struct _propagate_on_container_swap<T, Alloc, void_t<typename Alloc::propagate_on_container_swap>>
+	{
+		using type = typename Alloc::propagate_on_container_swap;
+	};
+
+	template<class T, class Alloc, class = void>
+	struct _is_always_equal
+	{
+		using type =typename  std::is_empty<Alloc>::type;
+	};
+
+	template<class T, class Alloc>
+	struct _is_always_equal<T,Alloc,void_t<typename Alloc::is_always_equal>>
+	{
+		using type = typename  Alloc::is_always_equal;
+	};
 	//template<typename T>
 	//struct has_construct
 	//{
@@ -140,6 +187,10 @@ namespace lix
 		using const_void_pointer = typename _const_void_pointer<value_type, Alloc>::type;
 		using difference_type = typename _difference_type<value_type, Alloc>::type;
 		using size_type = typename _size_type<difference_type, Alloc>::type;
+		using propagate_on_container_copy_assignment = typename _propagate_on_container_copy_assignment<value_type, Alloc>::type;
+		using propagate_on_container_move_assignment = typename _propagate_on_container_move_assignment<value_type, Alloc>::type;
+		using propagate_on_container_swap = typename _propagate_on_container_swap<value_type, Alloc>::type;
+		using is_always_equal = typename _is_always_equal<value_type, Alloc>::type;
 
 		template<class U>
 		using rebind_alloc = typename _rebind_alloc<U, Alloc>::type;

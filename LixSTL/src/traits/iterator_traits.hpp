@@ -5,6 +5,18 @@
 
 namespace lix
 {
+	template<class T, T v>
+	struct integral_constant {
+		static constexpr T value = v;
+		typedef T value_type;
+		typedef integral_constant type; 
+		constexpr operator value_type() const noexcept { return value; }
+		constexpr value_type operator()() const noexcept { return value; } 
+	};
+
+	using true_type = integral_constant<bool, true>;
+	using false_type = integral_constant<bool, false>;
+
 	//TODO 五种迭代器标志&继承
 	struct input_iterator_tag{};
 	struct output_iterator_tag{};
