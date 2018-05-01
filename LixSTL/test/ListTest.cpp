@@ -32,6 +32,46 @@ TEST(ListTest,Init) {
 	}
 
 	listEqualTest(lixlist, stdlist);
+
+	lix::list<int> lixlist2(5, 66);
+	std::list<int> stdlist2(5, 66);
+	listEqualTest(lixlist2, stdlist2);
+
+	lix::list<std::string> lixlist3(5);
+	std::list<std::string> stdlist3(5);
+	listEqualTest(lixlist3, stdlist3);
+
+	/*lix::list<std::string> lixlist4(lixlist2.begin(), lixlist2.end());
+	std::list<std::string> stdlist4(stdlist2.begin(), stdlist2.end());
+	listEqualTest(lixlist4, stdlist4);*/
+
+	lix::list<int> lixlist5(lixlist2);
+	std::list<int> stdlist5(stdlist2);
+	listEqualTest(lixlist5, stdlist5);
+
+	lix::list<int> lixlist6 = std::move(lixlist2);
+	std::list<int> stdlist6 = std::move(stdlist2);
+	listEqualTest(lixlist6, stdlist6);
+
+	lix::list<std::string> lixlist7{ "a","bb","ccc" };
+	std::list<std::string> stdlist7{ "a","bb","ccc" };
+	listEqualTest(lixlist7, stdlist7);
+}
+
+TEST(ListTest,Operator_equal) {
+	lix::list<int> list(5000, 500);
+	lix::list<int> tmp1{ 1,2,3 };
+	std::list<int> ex1{ 1,2,3 };
+	list = tmp1;
+	listEqualTest(list, ex1);
+
+	lix::list<int> tmp2{ 4,5,6 };
+	std::list<int> ex2{ 4,5,6 };
+	list = std::move(tmp2);
+	listEqualTest(list, ex2);
+
+	list = { 1,2,3 };
+	listEqualTest(list, ex1);
 }
 
 TEST(ListTest, Func_back_and_front) {
@@ -99,7 +139,7 @@ TEST(ListTest, Func_erase) {
 	listEqualTest(lixlist, stdlist);
 
 	//test for erase(itr1,itr2)
-	/*std::uniform_int_distribution<int> distribution2(0, static_cast<int>(lixlist.size()));
+	std::uniform_int_distribution<int> distribution2(0, static_cast<int>(lixlist.size()));
 	dice_roll = distribution2(generator);
 	int dice_roll2 = distribution2(generator);
 
@@ -126,7 +166,7 @@ TEST(ListTest, Func_erase) {
 	lixlist.erase(lixlistitr2,lixlistitr);
 	stdlist.erase(stdlistitr2,stdlistitr);
 
-	listEqualTest(lixlist, stdlist);*/
+//	listEqualTest(lixlist, stdlist);
 }
 
 TEST(ListTest,Func_insert) {
@@ -154,6 +194,25 @@ TEST(ListTest,Func_insert) {
 	stdlist.insert(itr2, 5888);
 
 	listEqualTest(lixlist, stdlist);
+
+	lix::list<int> lixlist2{ 1,2,3,4,5 };
+	std::list<int> stdlist2{ 1,2,3,4,5 };
+	int x = 2;
+	auto itl = lixlist2.begin();
+	auto its = stdlist2.begin();
+	while (x--) {
+		++itl; ++its;
+	}
+	auto test= lixlist2.insert(itl, 5, 99);
+	stdlist2.insert(its, 5, 99);
+	listEqualTest(lixlist2, stdlist2);
+	EXPECT_EQ(*(--test), 2);
+
+	++itl; ++its;
+	test = lixlist2.insert(itl, { 9,8,7 });
+	stdlist2.insert(its, { 9,8,7 });
+	listEqualTest(lixlist2, stdlist2);
+	EXPECT_EQ(*(--test), 3);
 }
 
 TEST(ListTest,Func_pop) {
@@ -209,4 +268,41 @@ TEST(ListTest,Func_remove) {
 		stdlist.remove(*itr);
 		listEqualTest(lixlist, stdlist);
 	}
+}
+
+TEST(ListTest,Func_emplace) {
+	struct test
+	{
+		test(int t) { x = t + 1; }
+		int x;
+	};
+
+	test a(2);
+	lix::list<test> list(3, a);
+	auto it = list.begin();
+	++it;
+	list.emplace(it, 99);
+	EXPECT_EQ((*it).x, 3);
+	--it;
+	EXPECT_EQ((*it).x, 100);
+
+	list.emplace_back(66);
+	it = list.end();
+	EXPECT_EQ((*(--it)).x, 67);
+
+	list.emplace_front(44);
+	it = list.begin();
+	EXPECT_EQ((*(it)).x, 45);
+}
+
+TEST(ListTest, Func_swap) {
+	lix::list<int> lixlist1{ 1,2 };
+	lix::list<int> lixlist2{ 4,5 };
+	lixlist1.swap(lixlist2);
+
+	std::list<int> stdlist1{ 1,2 };
+	std::list<int> stdlist2{ 4,5 };
+
+	listEqualTest(lixlist1, stdlist2);
+	listEqualTest(lixlist2, stdlist1);
 }

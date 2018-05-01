@@ -13,12 +13,11 @@
 
 int main(int ac, char* av[])
 {
-	lix::vector<int> dd;
-	dd.swap(dd);
 	testing::InitGoogleTest(&ac, av);
-	::testing::GTEST_FLAG(filter) = "VectorTest*";
+	::testing::GTEST_FLAG(filter) = "ListTest*";
 	//while (true) 
 	RUN_ALL_TESTS();
+
 	system("pause");
 	return 0;
 }

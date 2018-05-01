@@ -56,13 +56,14 @@ namespace lix
 
 			}
 			else {
-				allocator_ = vec.get_allocator();
+				//TODO 
+				/*allocator_ = vec.get_allocator();
 				_start = allocator::allocate(vec.size());
 				_end = _start + vec.size();
 				_tail = _end;
 				auto tmp = _start;
 				auto it = vec.begin();
-				for (; it != vec.end(); ++it, ++tmp) tmp = std::move(it);
+				for (; it != vec.end(); ++it, ++tmp) tmp = std::move(it);*/
 			}
 			vec._start = nullptr;
 			vec._end = nullptr;
@@ -431,7 +432,7 @@ namespace lix
 
 	template <class T, class Alloc>
 	vector<T, Alloc>::vector(vector&& other) noexcept {
-		allocator_ = other.allocator_;
+		allocator_ = std::move(other.allocator_);
 		_start = other._start;
 		_end = other._end;
 		_tail = other._tail;

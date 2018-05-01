@@ -48,7 +48,7 @@ struct _list_iterator
 		node = node->next;
 		return *this;
 	}
-	self operator++(int) {
+	self operator++(int)  {
 		self tmp = *this;
 		operator++();
 		return tmp;
@@ -57,7 +57,7 @@ struct _list_iterator
 		node = node->prev;
 		return *this;
 	}
-	self operator--(int) {
+	self operator--(int)  {
 		self tmp = *this;
 		operator--();
 		return tmp;
@@ -67,35 +67,38 @@ struct _list_iterator
 
 
 
-template<class T,class Alloc=allocator<T>>
+template<class T,class Allocator=allocator<T>>
 class list
 {
 protected:
 	using list_node = _list_node<T>;
-	using allocator = typename  allocator_traits<Alloc>::template rebind_alloc<_list_node<T>>;
+	using allocator = typename  allocator_traits<Allocator>::template rebind_alloc<_list_node<T>>;
 	using link_type = list_node * ;
 
 public:
 	using value_type = T;
-	using allocator_type = Alloc;
+	using allocator_type = Allocator;
 	using size_type = size_t;
 	using difference_type = ptrdiff_t;
 	using reference = value_type & ;
 	using const_reference = const value_type&;
-	using pointer = typename allocator_traits<Alloc>::pointer;
-	using const_pointer = typename allocator_traits<Alloc>::const_pointer;
+	using pointer = typename allocator_traits<Allocator>::pointer;
+	using const_pointer = typename allocator_traits<Allocator>::const_pointer;
 	using iterator = _list_iterator<T, reference, pointer>;
 	using const_iterator = const iterator;
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-
-
+private:
 	allocator allocator_;
 	link_type node;
 
-	iterator begin() { return node->next; }
-	iterator end() { return node; }
+public:
+	allocator_type get_allocator() const {
+		return allocator_;
+	}
+	iterator begin() const { return node->next; }
+	iterator end() const { return node; }
 	bool empty() { return node->next == node; }
 	size_type size() {
 		return distance(begin(), end());
@@ -112,14 +115,28 @@ protected:
 		return p;
 	}
 	void destroy_node(link_type p) {
-		allocator_traits<allocator>::destroy(allocator_, p);
+	//	allocator_traits<allocator>::destroy(allocator_, p);
 		put_node(p);
 	}
-	void init() {
-		allocator_ = allocator();
+	void init(Allocator alloc=Allocator()) {
+		allocator_ = alloc;
 		node = get_node();
 		node->next = node;
 		node->prev = node;
+	}
+	void init_with_initial(size_type count, const T& value, const Allocator& alloc = Allocator()) {
+		init(alloc);
+		while (count--) {
+			push_back(value);
+		}
+	}
+	template< class InputIt >
+	void init_with_iterator(InputIt first, InputIt last, const Allocator& alloc = Allocator()) {
+		init(alloc);
+		iterator itr = first;
+		for (; itr != last; ++itr) {
+			push_back(*itr);
+		}
 	}
 	void transfer(iterator pos, iterator first, iterator last) {
 		if (pos != last) {
@@ -134,13 +151,69 @@ protected:
 	}
 public:
 	list() { init(); }
-	~list() {
-		clear();
+	list(size_type count, const T& value=T(), const Allocator& alloc = Allocator()) {
+		init_with_initial(count, value, alloc);
+	}
+	// TODO DefaultInsertable?
+	//explicit list(size_type count, const Allocator& alloc = Allocator()) {
+	//	init_with_initial(count, T(), alloc);
+	//}
 
-		destroy_node(node);
+	// TODO InputIt satisfies InputIterator
+	//template< class InputIt >
+	//list(InputIt first, InputIt last, const Allocator& alloc = Allocator()) {
+	//	init_with_iterator(first, last, alloc);
+	//}
+	list(const list& other, const Allocator& alloc=Allocator()) {
+		init_with_iterator(other.begin(), other.end(), alloc);
+		/*init(alloc);
+		iterator first = other.begin();
+		for (; first != other.end(); ++first) {
+			push_back(*first);
+		}*/
+	}
+	list(list&& other) noexcept {
+		allocator_ = std::move( other.allocator_);
+		node = other.node;
+		other.node = nullptr;
+	}
+	list(list&& other, const Allocator& alloc) {
+		if(alloc==other.get_allocator()) {
+			allocator_ = alloc;
+			node = other.node;
+			other.node = nullptr;
+		}else {
+			//TODO
+		}
+	}
+	list(std::initializer_list<T> initlist,
+		const Allocator& alloc = Allocator()) {
+		init(alloc);
+		for (auto it = initlist.begin(); it != initlist.end(); ++it) push_back(*it);
+	}
+	~list() {
+		_clear();
 	}
 
-	iterator insert(iterator pos,const T& x) {
+	list& operator=(const list& other) {
+		_clear();
+		init_with_iterator(other.begin(), other.end(), other.get_allocator());
+		return *this;
+	}
+	list& operator=(list&& other) noexcept(allocator_traits<Allocator>::is_always_equal::value) {
+		_clear();
+		allocator_ = other.get_allocator();
+		node = other.node;
+		other.node = nullptr;
+		return *this;
+	}
+	list& operator=(std::initializer_list<T> ilist) {
+		clear();
+		for (auto it = ilist.begin(); it != ilist.end(); ++it) push_back(*it);
+		return *this;
+	}
+
+	iterator insert(const_iterator pos,const T& x) {
 		link_type tmp = create_node(x);
 		tmp->next = pos.node;
 		tmp->prev = pos.node->prev;
@@ -148,7 +221,50 @@ public:
 		pos.node->prev = tmp;
 		return tmp;
 	}
+	iterator insert(const_iterator pos, size_type count, const T& value) {
+		iterator tmp = pos;
+		--tmp;
+		while(count--) {
+			insert(pos, value);
+		}
+		++tmp;
+		return tmp;
+	}
+	//TODO InputIt satisfies InputIterator
+	//template< class InputIt >
+	//iterator insert(const_iterator pos, InputIt first, InputIt last);
+	iterator insert(const_iterator pos, std::initializer_list<T> ilist) {
+		auto it = ilist.begin();
+		auto tmp = insert(pos, *it);
+		for (++it; it != ilist.end(); ++it) insert(pos, *it);
+		return tmp;
+	}
 
+	template< class... Args >
+	iterator emplace(const_iterator pos, Args&&... args) {
+		link_type p = get_node();
+		link_type t = pos.node;
+		allocator_traits<allocator>::construct(allocator_, p, args...);
+
+		p->next = t;
+		t->prev->next = p;
+		p->prev = t->prev;
+		t->prev = p;
+
+		auto tmp = pos;
+		return --tmp;
+	}
+
+	template< class... Args >
+	reference emplace_back(Args&&... args) {
+		iterator it = emplace(end(), args...);
+		return it.node->data;
+	}
+	template< class... Args >
+	reference emplace_front(Args&&... args) {
+		iterator it = emplace(begin(), args...);
+		return it.node->data;
+	}
 	iterator erase(iterator pos) {
 		link_type prev = pos.node->prev;
 		link_type next = pos.node->next;
@@ -157,21 +273,43 @@ public:
 		destroy_node(pos.node);
 		return next;
 	}
+	iterator erase(iterator first,iterator last) {
+		for(;first!=last;/*++first*/) {
+			first= erase(first);
+		}
+		return last;
+	}
 
 	void push_back(const T& x) { insert(end(), x); }
 	void push_front(const T& x) { insert(begin(), x); }
 	void pop_back() { erase(--end()); }
 	void pop_front() { erase(begin()); }
 
-	void clear() {
-		link_type itr = node->next;
-		while(itr!=node) {
-			link_type tmp = itr;
-			itr=itr->next;
-			destroy_node(tmp);
+	void clear() noexcept {
+		if (node != nullptr) {
+			link_type itr = node->next;
+			while (itr != node) {
+				link_type tmp = itr;
+				itr = itr->next;
+				destroy_node(tmp);
+			}
+			node->next = node;
+			node->prev = node;
 		}
-		node->next = node;
-		node->prev = node;
+	}
+
+	void _clear() {
+		clear();
+		destroy_node(node);
+	}
+
+	void swap(list& other) noexcept(allocator_traits<Allocator>::is_always_equal::value) {
+		auto tmp_node = other.node;
+		auto tmp_allocator = other.allocator_;
+		other.node = node;
+		other.allocator_ = allocator_;
+		node = tmp_node;
+		allocator_ = tmp_allocator;
 	}
 
 	void remove(const T& val) {
