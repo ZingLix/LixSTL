@@ -3,7 +3,7 @@
 
 #include "../include/memory"
 #include "../traits/iterator_traits.hpp"
-
+#include <list>
 namespace lix
 {
 
@@ -339,7 +339,7 @@ public:
 		if (!l.empty()) transfer(pos, l.begin(), l.end());
 	}
 
-	void splice(iterator pos,iterator itr,list&) {
+	void splice(iterator pos,list&, iterator itr) {
 		iterator i = itr;
 		++i;
 		if(pos==i||pos==itr) return;
@@ -350,10 +350,59 @@ public:
 		if (first != last) transfer(pos, first, last);
 	}
 
-	//TODO
-	//void merge(list& x);
-	//void reverse();
-	//void sort();
+	void merge(list& other) {
+		if (get_allocator() != other.get_allocator()) return;
+		iterator first1 = begin();
+		iterator last1 = end();
+		iterator first2 = other.begin();
+		iterator last2 = other.end();
+		if(first1==first2&&last1==last2) return;
+		while (first1!=last1 && first2!=last2) {
+			if(*first2<*first1) {
+				iterator next = first2;
+				transfer(first1, first2, ++next);
+				first2 = next;
+			}else {
+				++first1;
+			}
+		}
+		if (first2 != last2) transfer(last1, first2, last2);
+	}
+	
+	//TODO	
+	//template <class Compare>
+	//void merge(list&& other, Compare comp);
+	
+	void reverse() noexcept {
+		if (node->next == node || node->next->next == node) return;
+		iterator itr = begin();
+		++itr;
+		while(itr!=end()) {
+			iterator old = itr;
+			++itr;
+			transfer(begin(), old, itr);
+		}
+	}
+	
+	void sort() {
+		if (node->next == node || node->next->next == node) return;
+		list<T, Allocator> carry;
+		list<T, Allocator> counter[64];
+		int fill = 0;
+		while(!empty()) {
+			carry.splice(carry.begin(), *this, begin());
+			int i = 0;
+			while(i<fill&&!counter[i].empty()) {
+				counter[i].merge(carry);
+				carry.swap(counter[i++]);
+			}
+			carry.swap(counter[i]);
+			if (i == fill)++fill;
+		}
+		for (int i = 1; i < fill; ++i) 
+			counter[i].merge(counter[i - 1]);
+		swap(counter[fill - 1]);
+	}
 
 };
 

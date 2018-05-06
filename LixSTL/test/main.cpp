@@ -17,7 +17,7 @@ int main(int ac, char* av[])
 	::testing::GTEST_FLAG(filter) = "ListTest*";
 	//while (true) 
 	RUN_ALL_TESTS();
-
+	lix::vector<lix::list<int>> asdf;
 	system("pause");
 	return 0;
 }

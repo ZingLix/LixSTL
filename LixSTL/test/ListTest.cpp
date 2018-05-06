@@ -25,7 +25,7 @@ TEST(ListTest,Init) {
 	std::uniform_int_distribution<int> distribution(0, 10000);
 	int dice_roll = distribution(generator);
 
-	for(int i=0;i<50000;i++) {
+	for(int i=0;i<5000;i++) {
 		dice_roll = distribution(generator);
 		lixlist.push_back(dice_roll);
 		stdlist.push_back(dice_roll);
@@ -152,7 +152,7 @@ TEST(ListTest, Func_erase) {
 	lixlistitr = lixlist.begin();
 	stdlistitr = stdlist.begin();
 
-	int i = 0;
+	int i;
 	for (i = 0; i<dice_roll; i++) {
 		++lixlistitr;
 		++stdlistitr;
@@ -305,4 +305,63 @@ TEST(ListTest, Func_swap) {
 
 	listEqualTest(lixlist1, stdlist2);
 	listEqualTest(lixlist2, stdlist1);
+}
+
+TEST(ListTest,Func_merge) {
+	lix::list<int> lixlist1{ 1,1,6,9 };
+	lix::list<int> lixlist2{ 0,3,4,6,8};
+	//lixlist1.sort();
+	//lixlist2.sort();
+	lixlist1.merge(lixlist2);
+
+	std::list<int> stdlist1{ 1,1,6,9 };
+	std::list<int> stdlist2{ 0,3,4,6,8 };
+	//stdlist1.sort();
+	//stdlist2.sort();
+	stdlist1.merge(stdlist2);
+
+	listEqualTest(lixlist1, stdlist1);
+	EXPECT_EQ(lixlist2.empty(), stdlist2.empty());
+
+	lixlist1.merge(lixlist1);
+	listEqualTest(lixlist1, stdlist1);
+}
+
+TEST(ListTest,Func_reverse) {
+	lix::list<int> lixlist;
+	std::list<int> stdlist;
+
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
+	std::uniform_int_distribution<int> distribution(0, 10000);
+	int dice_roll = distribution(generator);
+
+	for (int i = 0; i<500; i++) {
+		dice_roll = distribution(generator);
+		lixlist.push_back(dice_roll);
+		stdlist.push_back(dice_roll);
+	}
+	lixlist.reverse();
+	stdlist.reverse();
+	listEqualTest(lixlist, stdlist);
+}
+
+TEST(ListTest,Func_sort) {
+	lix::list<int> lixlist;
+	std::list<int> stdlist;
+
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
+	std::uniform_int_distribution<int> distribution(0, 10000);
+	int dice_roll = distribution(generator);
+
+	for (int i = 0; i<500; i++) {
+		dice_roll = distribution(generator);
+		lixlist.push_back(dice_roll);
+		stdlist.push_back(dice_roll);
+	}
+
+	lixlist.sort();
+	stdlist.sort();
+	listEqualTest(lixlist, stdlist);
+	//lix::list<int> list{ 7,3,23,7,45 };
+	//list.sort();
 }
