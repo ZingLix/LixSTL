@@ -9,14 +9,19 @@
 #include <deque>
 
 template<class T>
-void dequeEqualTest(lix::deque<T>& lixdeque, std::deque<T>& stddeque) {
+bool dequeEqualTest1(lix::deque<T>& lixdeque, std::deque<T>& stddeque) {
 	auto itr1 = lixdeque.begin();
 	auto itr2 = stddeque.begin();
 	for (; itr2 != stddeque.end(); ++itr1, ++itr2) {
 		EXPECT_EQ(*itr1, *itr2);
 	}
+	return  itr1 == lixdeque.end();
 }
 
+template<class T>
+void dequeEqualTest(lix::deque<T>& lixdeque, std::deque<T>& stddeque) {
+	EXPECT_EQ(dequeEqualTest1(lixdeque, stddeque), true);
+}
 
 TEST(DequeTest,Init) {
 	lix::deque<int> lixdeque;
@@ -24,14 +29,24 @@ TEST(DequeTest,Init) {
 	EXPECT_EQ(lixdeque.size(), stddeque.size());
 	EXPECT_EQ(lixdeque.empty(), stddeque.empty());
 
-	lix::deque<int> lixdeque2(4, 88);
-	std::deque<int> stddeque2(4, 88);
+	lix::deque<int> lixdeque2(99999, 88);
+	std::deque<int> stddeque2(99999, 88);
 	dequeEqualTest(lixdeque2, stddeque2);
+
+	lix::deque<int> lixdeque3(lixdeque2);
+	dequeEqualTest(lixdeque3, stddeque2);
+
+	lix::deque<int> lixdeque4(std::move(lixdeque2));
+	dequeEqualTest(lixdeque4, stddeque2);
+
+	lix::deque<int> lixdeque5{ 5,3,76 };
+	std::deque<int> stddeque5{ 5,3,76 };
+	dequeEqualTest(lixdeque5, stddeque5);
 }
 
 TEST(DequeTest,Func_push) {
-	lix::deque<int> lixdeque;
-	std::deque<int> stddeque;
+	lix::deque<int> lixdeque(3,10);
+	std::deque<int> stddeque(3,10);
 
 	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);
@@ -113,4 +128,39 @@ TEST(DequeTest,Func_empty) {
 	lixdeque.clear();
 	stddeque.clear();
 	EXPECT_EQ(lixdeque.empty(), stddeque.empty());
+}
+
+TEST(DequeTest,Operator_equal) {
+	lix::deque<int> lixdeque{ 6,4,32,672,45345 };
+	std::deque<int> stddeque{ 6,4,32,672,45345 };
+	lix::deque<int> lixdeque1{ 124,1346,1345 };
+	lixdeque1 = lixdeque;
+	dequeEqualTest(lixdeque1, stddeque);
+
+	lixdeque1 = { 534,6234,2345 };
+	std::deque<int> stddeque1{ 534,6234,2345 };
+	dequeEqualTest(lixdeque1, stddeque1);
+
+	lixdeque1 = std::move(lixdeque);
+	dequeEqualTest(lixdeque1, stddeque);
+}
+
+TEST(DequeTest, Operator_square) {
+	lix::deque<int> lixdeque(3, 10);
+	std::deque<int> stddeque(3, 10);
+
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
+	std::uniform_int_distribution<int> distribution(0, 10000);
+	int dice_roll = distribution(generator);
+
+	for (int i = 0; i<5000; i++) {
+		dice_roll = distribution(generator);
+		lixdeque.push_front(dice_roll);
+		stddeque.push_front(dice_roll);
+	}
+
+	for(int i=0;i<lixdeque.size();++i) {
+		EXPECT_EQ(lixdeque[i], stddeque[i]);
+		EXPECT_EQ(lixdeque.at(i), stddeque.at(i));
+	}
 }

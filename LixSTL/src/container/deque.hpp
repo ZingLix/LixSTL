@@ -95,11 +95,19 @@ namespace lix
 		}
 		reference operator[](difference_type n) const { return *(*this + n); }
 		
-		bool operator==(const self& x) { return cur == x.cur; }
+		bool operator==(const self& x)  { return cur == x.cur; }
 		bool operator!=(const self&x) { return !(*this == x); }
 		bool operator<(const self& x) { return (node == x.node) ? (cur < x.cur) : (node < x.node); }
+	/*	friend bool operator==(const self& lfs, const self& rfs) {
+			return lfs.cur == rfs.cur;
+		}*/
+
 	};
 
+	//template<class T, class Ref, class Ptr, size_t Bufsiz>
+	//bool operator==(const __deque_iterator<T,Ref,Ptr,Bufsiz>& lfs, const __deque_iterator<T, Ref, Ptr, Bufsiz>& rfs) {
+	//	return lfs.cur == rfs.cur;
+	//}
 
 	template <class T,class Alloc=allocator<T>,size_t Bufsiz=0>
 	class deque
@@ -125,43 +133,110 @@ namespace lix
 
 
 	public:
-		deque(int n, const value_type& val) :start(), finish(), map(nullptr), map_size(0),alloc_() {
-			fill_initialize(n, val);
-		}
 		deque() :start(), finish(), map(nullptr), map_size(0),alloc_() {
 			fill_initialize(0, value_type());
 		}
-		~deque() {
-			for (map_pointer node = start.node + 1; node<finish.node; ++node) {
-				auto p = *node;
-				for (; p != *node + buffer_size(); ++p) {
-					allocator_traits<Alloc>::destroy(alloc_, p);
-				}
-				data_allocator::deallocate(*node, buffer_size());
-			}
-			if (start.node != finish.node) {
-				auto p = start.cur;
-				for (; p != start.last; ++p) {
-					allocator_traits<Alloc>::destroy(alloc_, p);
-				}
-				data_allocator::deallocate(start.first, buffer_size());
-				p = finish.first;
-				for (; p != finish.cur; ++p) {
-					allocator_traits<Alloc>::destroy(alloc_, p);
-				}
-				data_allocator::deallocate(finish.first, buffer_size());
-			}
-			else {
-				auto p = start.cur;
-				for (; p != finish.cur; ++p) {
-					allocator_traits<Alloc>::destroy(alloc_, p);
-				}
-				data_allocator::deallocate(start.first, buffer_size());
-				//destroy(start.cur, finish.cur);
-			}
-			map_allocator::deallocate(map);
+		explicit deque(const Alloc& alloc) :start(), finish(), map(nullptr), map_size(0), alloc_(alloc) {
+			fill_initialize(0, value_type());
 		}
-
+		deque(int n, const value_type& val,
+			const Alloc& alloc = Alloc()) :start(), finish(), map(nullptr), map_size(0), alloc_(alloc) {
+			fill_initialize(n, val);
+		}
+		explicit deque(size_type count, const Alloc& alloc = Alloc()) :start(), finish(), map(nullptr), map_size(0), alloc_(alloc) {
+			fill_initialize(count, value_type());
+		}
+		//TODO InputIt satisfies InputIterator
+		/*template< class InputIt >
+		deque(InputIt first, InputIt last,
+			const Alloc& alloc = Alloc());*/
+		deque(deque& other) {
+			alloc_ = other.alloc_;
+			create_map_and_nodes(other.size());
+			auto cur = start;
+			for (auto it = other.begin(); it != other.end(); ++it)
+				allocator_traits<Alloc>::construct(alloc_, (cur++).cur, *it);
+		}
+		deque(deque&& other) noexcept {
+			alloc_ = other.alloc_;
+			start = other.start;
+			finish = other.finish;
+			map = other.map;
+			map_size = other.map_size;
+			other.map = nullptr;
+		}
+		deque(std::initializer_list<T> init,
+			const Alloc& alloc = Alloc()) {
+			alloc_ = alloc;
+			create_map_and_nodes(init.size());
+			auto cur = start;
+			for(auto it=init.begin();it!=init.end();++it) {
+				allocator_traits<Alloc>::construct(alloc_, (cur++).cur, *it);
+			}
+		}
+		~deque() {
+			_clear();
+		}
+		void _clear() {
+			if (map != nullptr) {
+				for (map_pointer node = start.node + 1; node<finish.node; ++node) {
+					auto p = *node;
+					for (; p != *node + buffer_size(); ++p) {
+						allocator_traits<Alloc>::destroy(alloc_, p);
+					}
+					data_allocator::deallocate(*node, buffer_size());
+				}
+				if (start.node != finish.node) {
+					auto p = start.cur;
+					for (; p != start.last; ++p) {
+						allocator_traits<Alloc>::destroy(alloc_, p);
+					}
+					data_allocator::deallocate(start.first, buffer_size());
+					p = finish.first;
+					for (; p != finish.cur; ++p) {
+						allocator_traits<Alloc>::destroy(alloc_, p);
+					}
+					data_allocator::deallocate(finish.first, buffer_size());
+				}
+				else {
+					auto p = start.cur;
+					for (; p != finish.cur; ++p) {
+						allocator_traits<Alloc>::destroy(alloc_, p);
+					}
+					data_allocator::deallocate(start.first, buffer_size());
+					//destroy(start.cur, finish.cur);
+				}
+				map_allocator::deallocate(map);
+			}
+		}
+		deque& operator=(deque& other) {
+			_clear();
+			alloc_ = other.alloc_;
+			create_map_and_nodes(other.size());
+			auto cur = start.cur;
+			for (auto it = other.begin(); it != other.end(); ++it)
+				allocator_traits<Alloc>::construct(alloc_, cur++, *it);
+			return *this;
+		}
+		deque& operator=(deque&& other) noexcept(allocator_traits<Alloc>::is_always_equal::value) {
+			_clear();
+			alloc_ = other.alloc_;
+			start = other.start;
+			finish = other.finish;
+			map = other.map;
+			map_size = other.map_size;
+			other.map = nullptr;
+			return *this;
+		}
+		deque& operator=(std::initializer_list<T> ilist) {
+			_clear();
+			create_map_and_nodes(ilist.size());
+			auto cur = start.cur;
+			for (auto it = ilist.begin(); it != ilist.end(); ++it) {
+				allocator_traits<Alloc>::construct(alloc_, cur++, *it);
+			}
+			return *this;
+		}
 		reference front() { return *start; }
 		reference back() {
 			//iterator tmp = finish;
@@ -172,6 +247,9 @@ namespace lix
 		}
 		iterator begin() { return start; }
 		iterator end() { return finish; }
+		allocator_type get_allocator() {
+			return alloc_;
+		}
 
 		bool empty() { return finish == start; }
 		size_type size() { return finish - start; }
@@ -209,7 +287,7 @@ namespace lix
 			if (finish.cur != finish.first) {
 				--finish.cur;
 				allocator_traits<Alloc>::destroy(alloc_, finish.cur);
-				//destroy(finish.cur);
+				destroy(finish.cur);
 			}
 			else {
 				pop_back_aux();
@@ -228,7 +306,7 @@ namespace lix
 		void pop_front() {
 			if (start.cur != start.last - 1) {
 				allocator_traits<Alloc>::destroy(alloc_, start.cur);
-				//destroy(start.cur);
+				destroy(start.cur);
 				++start.cur;
 			}
 			else {
@@ -245,6 +323,26 @@ namespace lix
 			}
 		}
 
+		void shrink_to_fit() {
+			//all operation will release memory if available
+
+			//const size_type nodes_num = size() / buffer_size() + 1;
+			//auto new_map_size = initial_map_size() < nodes_num ? nodes_num + 2 : initial_map_size();
+			//if (new_map_size >= size()) return;
+			//auto new_map_pointer = map_allocator::allocate(new_map_size);
+			//uninitialized_copy(start.node, finish.node+1, new_map_pointer + new_map_size / 2 - nodes_num);
+			//auto nstart = new_map_pointer + new_map_size / 2 - nodes_num;
+			//auto nfinish = nstart + (finish - start)/buffer_size();
+			//for (auto it = new_map_pointer; it != nstart; ++it) *it = allocate_node();
+			//for (auto it = new_map_pointer + new_map_size; it != nfinish; --it)
+			//	*it = allocate_node();
+			//
+			//auto tmp = map;
+			//map = new_map_pointer;
+			////start.set_node(nstart);
+			////finish.set_node(nfinish);
+			//map_allocator::deallocate(tmp);
+		}
 
 	protected:
 		static size_type buffer_size() { return _deque_buf_size(Bufsiz, sizeof(T)); }
@@ -280,10 +378,15 @@ namespace lix
 			}
 			uninitialized_fill(finish.first, finish.cur, val);
 		}
-
+	public:
 		reference operator[](size_type n)
 		{
 			return start[difference_type(n)];
+		}
+
+		reference at(size_type n) {
+			if (n < size()) return operator[](n);
+			else throw std::out_of_range("out of range");
 		}
 
 		void reallocate_map(size_type new_nodes_num,bool add_front) {

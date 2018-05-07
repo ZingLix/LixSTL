@@ -14,10 +14,16 @@
 int main(int ac, char* av[])
 {
 	testing::InitGoogleTest(&ac, av);
-	::testing::GTEST_FLAG(filter) = "ListTest*";
+	::testing::GTEST_FLAG(filter) = "DequeTest*";
 	//while (true) 
 	RUN_ALL_TESTS();
-	lix::vector<lix::list<int>> asdf;
-	system("pause");
+	//lix::vector<lix::list<int>> asdf;
+//	lix::deque<int> test(999999, 45);
+//	system("pause");
+//	for (int i = 0; i < 999990; ++i) test.pop_front();
+//	test.size();
+//	system("pause");
+////	test.shrink_to_fit();
+//	system("pause");
 	return 0;
 }
