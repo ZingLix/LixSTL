@@ -71,6 +71,9 @@
     <ClInclude Include="src\traits\iterator_traits.hpp">
       <Filter>src\traits</Filter>
     </ClInclude>
+    <ClInclude Include="src\container\stack.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
@@ -87,6 +90,12 @@
     </ClCompile>
     <ClCompile Include="test\DequeTest.cpp">
       <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\StackTest.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="include\stack">
+      <Filter>include</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

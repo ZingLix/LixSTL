@@ -122,6 +122,7 @@
     <ClInclude Include="src\algorithm\algorithm.hpp" />
     <ClInclude Include="src\container\deque.hpp" />
     <ClInclude Include="src\container\list.hpp" />
+    <ClInclude Include="src\container\stack.hpp" />
     <ClInclude Include="src\container\vector.hpp" />
     <ClInclude Include="src\memory\allocator.hpp" />
     <ClInclude Include="src\memory\allocator_traits.hpp" />
@@ -134,10 +135,12 @@
     <ClInclude Include="src\traits\iterator_traits.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\stack" />
     <ClCompile Include="include\vector" />
     <ClCompile Include="test\DequeTest.cpp" />
     <ClCompile Include="test\ListTest.cpp" />
     <ClCompile Include="test\main.cpp" />
+    <ClCompile Include="test\StackTest.cpp" />
     <ClCompile Include="test\VectorTest.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -43,7 +43,7 @@ namespace lix
 		reference operator*()const { return *cur; }
 		pointer operator->() const { return &(operator*()); }
 
-		difference_type operator-(const self& x) {
+		difference_type operator-(const self& x) const {
 			return difference_type(buffer_size())*(node - x.node - 1) + (cur - first) + (x.last - x.cur);
 		}
 		self& operator++() {
@@ -252,6 +252,7 @@ namespace lix
 
 		bool empty() { return finish == start; }
 		size_type size() { return finish - start; }
+		//size_type size() const { return ; }
 		size_type max_size() { return size_type(-1); } //????????
 
 		void clear() {

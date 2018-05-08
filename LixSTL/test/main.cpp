@@ -14,8 +14,8 @@
 int main(int ac, char* av[])
 {
 	testing::InitGoogleTest(&ac, av);
-	::testing::GTEST_FLAG(filter) = "DequeTest*";
-	//while (true) 
+	::testing::GTEST_FLAG(filter) = "StackTest*";
+	while (true) 
 	RUN_ALL_TESTS();
 	//lix::vector<lix::list<int>> asdf;
 //	lix::deque<int> test(999999, 45);
