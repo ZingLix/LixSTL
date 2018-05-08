@@ -14,19 +14,18 @@ namespace lix
 	template<class T, class Ref, class Ptr, size_t Bufsiz>
 	struct __deque_iterator
 	{
+		using iterator = __deque_iterator<T, T&, T*, Bufsiz>;
+		using const_iterator = __deque_iterator<T, const T&, const T*, Bufsiz>;
 
-		typedef __deque_iterator<T, T&, T*, Bufsiz> iterator;
-		typedef __deque_iterator<T, const T&, const T*, Bufsiz> const_iterator;
+		using iterator_category = random_access_iterator_tag;
+		using value_type = T;
+		using pointer = value_type * ;
+		using reference = value_type & ;
+		using size_type = size_t;
+		using difference_type = ptrdiff_t;
+		using map_pointer = T **;
 
-		typedef random_access_iterator_tag iterator_category;
-		typedef T value_type;
-		typedef value_type* pointer;
-		typedef value_type& reference;
-		typedef size_t size_type;
-		typedef ptrdiff_t difference_type;
-		typedef T** map_pointer;
-
-		typedef __deque_iterator self;
+		using self = __deque_iterator;
 
 		T* cur;
 		T* first;
@@ -287,7 +286,7 @@ namespace lix
 			if (finish.cur != finish.first) {
 				--finish.cur;
 				allocator_traits<Alloc>::destroy(alloc_, finish.cur);
-				destroy(finish.cur);
+//				destroy(finish.cur);
 			}
 			else {
 				pop_back_aux();
@@ -453,21 +452,51 @@ namespace lix
 			start.cur = start.first;
 		}
 
+		iterator insert(iterator pos,const value_type& x) {
+			if(pos.cur==start.cur) {
+				push_front(x);
+				return start;
+			}else if(pos.cur==finish.cur) {
+				push_back(x);
+				iterator tmp = finish;
+				return --tmp;
+			}else {
+				return insert_aux(pos, x);
+			}
+		}
+
+		iterator insert_aux(iterator pos,const value_type& x) {
+			size_type idx = pos - start;
+			value_type x_copy = x;
+			//if(idx<size()/2) {
+				push_front(front());
+				iterator front1 = start;
+				++front1;
+				iterator front2 = front1;
+				++front2;
+				pos = start + idx;
+				iterator pos1 = pos;
+				++pos1;
+				copy(front2, pos1, front1);
+			/*}else {
+				push_back(back());
+				iterator back1 = finish;
+				--back1;
+				iterator back2 = back1;
+				--back2;
+				pos = start + idx;
+				std::copy_backward(pos, back2, back1);
+			}*/
+			*pos = x_copy;
+			return pos;
+		}
+
 		iterator start;
 		iterator finish;
 		map_pointer map;
 		size_type map_size;
 		Alloc alloc_;
 	};
-
-
-
-
-
-
-
-
-
 
 }
 

@@ -24,6 +24,6 @@ int main(int ac, char* av[])
 //	test.size();
 //	system("pause");
 ////	test.shrink_to_fit();
-//	system("pause");
+	system("pause");
 	return 0;
 }

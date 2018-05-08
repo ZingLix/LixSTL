@@ -164,3 +164,28 @@ TEST(DequeTest, Operator_square) {
 		EXPECT_EQ(lixdeque.at(i), stddeque.at(i));
 	}
 }
+
+TEST(DequeTest,Func_insert) {
+	lix::deque<int> lixdeque(3, 10);
+	std::deque<int> stddeque(3, 10);
+
+	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
+	std::uniform_int_distribution<int> distribution(0, 10000);
+	int dice_roll = distribution(generator);
+
+	for (int i = 0; i<5000; i++) {
+		dice_roll = distribution(generator);
+		lixdeque.push_front(dice_roll);
+		stddeque.push_front(dice_roll);
+	}
+
+	std::uniform_int_distribution<int> distribution1(0, 5000);
+	int idx;
+	for(int i=0;i<100;++i) {
+		idx = distribution1(generator);
+		dice_roll = distribution(generator);
+		lixdeque.insert(lixdeque.begin()+idx, dice_roll);
+		stddeque.insert(stddeque.begin() + idx, dice_roll);
+	}
+	dequeEqualTest(lixdeque, stddeque);
+}

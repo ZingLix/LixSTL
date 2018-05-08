@@ -8,6 +8,14 @@ T& max(T& lfs,T& rfs) {
 	return lfs < rfs ? rfs : lfs;
 }
 
+template<class ForwardIterator>
+void copy(ForwardIterator first, ForwardIterator end, ForwardIterator new_pos) {
+	while (first < end) {
+		*new_pos = *first;
+		++first;
+		++new_pos;
+	}
+}
 
 }
 
