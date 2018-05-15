@@ -14,7 +14,7 @@
 int main(int ac, char* av[])
 {
 	testing::InitGoogleTest(&ac, av);
-	::testing::GTEST_FLAG(filter) = "StackTest*";
+	::testing::GTEST_FLAG(filter) = "QueueTest*";
 	while (true) 
 	RUN_ALL_TESTS();
 	//lix::vector<lix::list<int>> asdf;

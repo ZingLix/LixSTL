@@ -74,6 +74,9 @@
     <ClInclude Include="src\container\stack.hpp">
       <Filter>src\container</Filter>
     </ClInclude>
+    <ClInclude Include="src\container\queue.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
@@ -96,6 +99,9 @@
     </ClCompile>
     <ClCompile Include="include\stack">
       <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="test\QueueTest.cpp">
+      <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -306,7 +306,7 @@ namespace lix
 		void pop_front() {
 			if (start.cur != start.last - 1) {
 				allocator_traits<Alloc>::destroy(alloc_, start.cur);
-				destroy(start.cur);
+				//destroy(start.cur);
 				++start.cur;
 			}
 			else {
