@@ -141,6 +141,7 @@
     <ClCompile Include="include\stack" />
     <ClCompile Include="include\vector" />
     <ClCompile Include="src\container\priority_queue.hpp" />
+    <ClCompile Include="test\algorithm_HeapTest.cpp" />
     <ClCompile Include="test\DequeTest.cpp" />
     <ClCompile Include="test\ListTest.cpp" />
     <ClCompile Include="test\main.cpp" />

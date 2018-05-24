@@ -115,6 +115,9 @@
     <ClCompile Include="include\queue">
       <Filter>include</Filter>
     </ClCompile>
+    <ClCompile Include="test\algorithm_HeapTest.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
