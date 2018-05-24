@@ -22,7 +22,7 @@ struct allocator
 
 	static T* allocate(size_t n) {
 		void *address = ::operator new(n*sizeof(T));
-		//TODO ÄÚ´æ·ÖÅäÊ§°ÜÈÓ³öÒì³£
+		//TODO ï¿½Ú´ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ì³£
 		//if (address == nullptr) throw;
 		return static_cast<T*>(address);
 	}

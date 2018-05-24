@@ -77,6 +77,9 @@
     <ClInclude Include="src\container\queue.hpp">
       <Filter>src\container</Filter>
     </ClInclude>
+    <ClInclude Include="src\algorithm\heap.hpp">
+      <Filter>src\algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
@@ -102,6 +105,15 @@
     </ClCompile>
     <ClCompile Include="test\QueueTest.cpp">
       <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="src\container\priority_queue.hpp">
+      <Filter>src\container</Filter>
+    </ClCompile>
+    <ClCompile Include="test\PriorityQueueTest.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="include\queue">
+      <Filter>include</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

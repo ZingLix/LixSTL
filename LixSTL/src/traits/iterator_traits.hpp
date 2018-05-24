@@ -17,7 +17,7 @@ namespace lix
 	using true_type = integral_constant<bool, true>;
 	using false_type = integral_constant<bool, false>;
 
-	//TODO ÎåÖÖµü´úÆ÷±êÖ¾&¼Ì³Ğ
+	//TODO äº”ç§è¿­ä»£å™¨æ ‡å¿—&ç»§æ‰¿
 	struct input_iterator_tag{};
 	struct output_iterator_tag{};
 	struct forward_iterator_tag : public input_iterator_tag{};
@@ -44,7 +44,7 @@ namespace lix
 		typedef typename Itr::reference reference;
 	};
 
-	// TODO T* & CONST T* ÌØ»¯	
+	// TODO T* & CONST T* ç‰¹åŒ–	
 	template <class T>
 	struct iterator_traits<T*>
 	{
@@ -65,21 +65,21 @@ namespace lix
 		typedef const T& reference;
 	};
 
-	//TODO ´«Èë²ÎÊı½öÓÃÓÚÀàĞÍÍÆµ¼
-	//»ñµÃµü´úÆ÷ÀàĞÍ category
+	//TODO ä¼ å…¥å‚æ•°ä»…ç”¨äºç±»å‹æ¨å¯¼
+	//è·å¾—è¿­ä»£å™¨ç±»å‹ category
 	template<class Itr>
 	typename iterator_traits<Itr>::iterator_category iterator_category(const Itr&) {
 		typedef typename iterator_traits<Itr>::iterator_category category;
 		return category();
 	}
 
-	//»ñµÃ distance type
+	//è·å¾— distance type
 	template<class Itr>
 	typename iterator_traits<Itr>::difference_type* distance_type(const Itr&) {
 		return static_cast<typename iterator_traits<Itr>::difference_type*>(nullptr);
 	}
 
-	//»ñµÃ value type
+	//è·å¾— value type
 	template<class Itr>
 	typename iterator_traits<Itr>::value_type* value_type(const Itr&) {
 		return static_cast<typename iterator_traits<Itr>::value_type*>(nullptr);

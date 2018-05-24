@@ -120,6 +120,7 @@
   <ItemGroup>
     <ClInclude Include="include\memory" />
     <ClInclude Include="src\algorithm\algorithm.hpp" />
+    <ClInclude Include="src\algorithm\heap.hpp" />
     <ClInclude Include="src\container\deque.hpp" />
     <ClInclude Include="src\container\list.hpp" />
     <ClInclude Include="src\container\queue.hpp" />
@@ -136,11 +137,14 @@
     <ClInclude Include="src\traits\iterator_traits.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\queue" />
     <ClCompile Include="include\stack" />
     <ClCompile Include="include\vector" />
+    <ClCompile Include="src\container\priority_queue.hpp" />
     <ClCompile Include="test\DequeTest.cpp" />
     <ClCompile Include="test\ListTest.cpp" />
     <ClCompile Include="test\main.cpp" />
+    <ClCompile Include="test\PriorityQueueTest.cpp" />
     <ClCompile Include="test\QueueTest.cpp" />
     <ClCompile Include="test\StackTest.cpp" />
     <ClCompile Include="test\VectorTest.cpp" />

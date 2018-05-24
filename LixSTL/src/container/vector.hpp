@@ -161,9 +161,9 @@ namespace lix
 	private:
 		typedef Alloc allocator;
 		Alloc allocator_;
-		iterator _start; //Êı¾İÍ·
-		iterator _end;   //Êı¾İÎ²
-		iterator _tail;  //¿Õ¼äÎ²
+		iterator _start; //æ•°æ®å¤´
+		iterator _end;   //æ•°æ®å°¾
+		iterator _tail;  //ç©ºé—´å°¾
 	};
 
 
@@ -286,7 +286,7 @@ namespace lix
 			if (static_cast<size_type>(_tail - _end) >= n) {
 				auto elems_after = _end - pos;
 				iterator old_end = _end;
-				uninitialized_copy(_end - n, _end, _end);
+				std::uninitialized_copy(_end - n, _end, _end);
 				_end += n;
 				std::copy_backward(pos, old_end - n, old_end);
 				std::fill(pos, pos + n, value);
@@ -372,7 +372,7 @@ namespace lix
 	template <class T, class Alloc>
 	typename vector<T, Alloc>::iterator vector<T, Alloc>::allocate_and_fill(size_type n, const T& x) {
 		iterator address = allocator::allocate(n);
-		uninitialized_fill_n(address, n, x);
+		lix::uninitialized_fill_n(address, n, x);
 		return address;
 	}
 

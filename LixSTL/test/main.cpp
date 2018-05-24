@@ -10,20 +10,16 @@
 #include "../src/container/deque.hpp"
 #include <random>
 #include <deque>
+#include <queue>
+#include "../src/container/priority_queue.hpp"
 
 int main(int ac, char* av[])
 {
 	testing::InitGoogleTest(&ac, av);
-	::testing::GTEST_FLAG(filter) = "QueueTest*";
+	::testing::GTEST_FLAG(filter) = "PriorityQueueTest*";
 	while (true) 
 	RUN_ALL_TESTS();
-	//lix::vector<lix::list<int>> asdf;
-//	lix::deque<int> test(999999, 45);
-//	system("pause");
-//	for (int i = 0; i < 999990; ++i) test.pop_front();
-//	test.size();
-//	system("pause");
-////	test.shrink_to_fit();
+
 	system("pause");
 	return 0;
 }
