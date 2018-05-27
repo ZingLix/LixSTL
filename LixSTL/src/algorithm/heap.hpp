@@ -91,6 +91,20 @@ namespace lix
 		}
 	}
 
+	template<class RandomIt,class Distance>
+	bool _is_heap(RandomIt first,Distance size){
+		for(Distance i=0;i<size/2;++i) {
+			if (_left(i) < size&&*(first + i) < *(first + _left(i))) return false;
+			if (_right(i) < size&& *(first + i) < *(first + _right(i))) return  false;
+		}
+		return true;
+	}
+
+	template< class RandomIt >
+	bool is_heap(RandomIt first, RandomIt last) {
+		return _is_heap(first, last - first);
+	}
+
 	namespace other
 	{
 		template<class RandomIt, class Distance, class T>

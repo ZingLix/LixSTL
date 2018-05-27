@@ -47,3 +47,16 @@ TEST(algorithm_HeapTest, sort_heap) {
 		EXPECT_EQ(flag, true);
 	}
 }
+
+TEST(algorithm_HeapTest, is_heap) {
+	std::vector<int> vec{ 43,73,24,63,78,22,64 };
+	EXPECT_EQ(lix::is_heap(vec.begin(),vec.end()), false);
+	lix::make_heap(vec.begin(), vec.end());
+	EXPECT_EQ(lix::is_heap(vec.begin(),vec.end()), true);
+	vec[0] = -3;
+	EXPECT_EQ(lix::is_heap(vec.begin(), vec.end()), false);
+	lix::make_heap(vec.begin(), vec.end());
+	EXPECT_EQ(lix::is_heap(vec.begin(), vec.end()), true);
+	vec[6] = 999;
+	EXPECT_EQ(lix::is_heap(vec.begin(), vec.end()), false);
+}
