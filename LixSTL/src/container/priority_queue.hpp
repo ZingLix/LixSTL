@@ -68,11 +68,6 @@ public:
 		push_heap(c.begin(), c.end()/*, comp*/);
 	}
 
-	void print() {
-		for(int i=0;i<c.size();++i) {
-			std::cout << c[i] << " ";
-		}
-	}
 };
 
 
