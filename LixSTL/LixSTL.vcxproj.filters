@@ -80,6 +80,9 @@
     <ClInclude Include="src\algorithm\heap.hpp">
       <Filter>src\algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="src\container\rb_tree.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">

@@ -124,6 +124,7 @@
     <ClInclude Include="src\container\deque.hpp" />
     <ClInclude Include="src\container\list.hpp" />
     <ClInclude Include="src\container\queue.hpp" />
+    <ClInclude Include="src\container\rb_tree.hpp" />
     <ClInclude Include="src\container\stack.hpp" />
     <ClInclude Include="src\container\vector.hpp" />
     <ClInclude Include="src\memory\allocator.hpp" />
