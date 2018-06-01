@@ -161,9 +161,9 @@ namespace lix
 	private:
 		typedef Alloc allocator;
 		Alloc allocator_;
-		iterator _start; //数据头
-		iterator _end;   //数据尾
-		iterator _tail;  //空间尾
+		iterator _start; 
+		iterator _end;   
+		iterator _tail;  
 	};
 
 

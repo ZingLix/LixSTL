@@ -17,7 +17,6 @@ namespace lix
 	using true_type = integral_constant<bool, true>;
 	using false_type = integral_constant<bool, false>;
 
-	//TODO 五种迭代器标志&继承
 	struct input_iterator_tag{};
 	struct output_iterator_tag{};
 	struct forward_iterator_tag : public input_iterator_tag{};
@@ -44,7 +43,6 @@ namespace lix
 		typedef typename Itr::reference reference;
 	};
 
-	// TODO T* & CONST T* 特化	
 	template <class T>
 	struct iterator_traits<T*>
 	{
@@ -65,21 +63,17 @@ namespace lix
 		typedef const T& reference;
 	};
 
-	//TODO 传入参数仅用于类型推导
-	//获得迭代器类型 category
 	template<class Itr>
 	typename iterator_traits<Itr>::iterator_category iterator_category(const Itr&) {
 		typedef typename iterator_traits<Itr>::iterator_category category;
 		return category();
 	}
 
-	//获得 distance type
 	template<class Itr>
 	typename iterator_traits<Itr>::difference_type* distance_type(const Itr&) {
 		return static_cast<typename iterator_traits<Itr>::difference_type*>(nullptr);
 	}
 
-	//获得 value type
 	template<class Itr>
 	typename iterator_traits<Itr>::value_type* value_type(const Itr&) {
 		return static_cast<typename iterator_traits<Itr>::value_type*>(nullptr);
