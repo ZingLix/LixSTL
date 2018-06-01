@@ -12,7 +12,7 @@
 int main(int ac, char* av[])
 {
 	testing::InitGoogleTest(&ac, av);
-	::testing::GTEST_FLAG(filter) = "algorithm_HeapTest*";
+	::testing::GTEST_FLAG(filter) = "RbTreeTest*";
 //	while (true) 
 	RUN_ALL_TESTS();
 

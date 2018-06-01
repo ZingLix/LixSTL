@@ -171,9 +171,9 @@ namespace lix
 		link_type& leftmost() { return header->left; }
 		link_type& rightmost() { return header->right; }
 
-		static link_type& left(link_type x) { return x->left; }
-		static link_type& right(link_type x) { return x->right; }
-		static link_type& parent(link_type x) { return x->parent; }
+		static link_type left(link_type x) { return x->left; }
+		static link_type right(link_type x) { return x->right; }
+		static link_type parent(link_type x) { return static_cast<link_type> (x->parent); }
 		static reference value(link_type x) { return x->value; }
 		static link_type& key(link_type x) { return KeyOfValue()(x->left); }
 		static color_type& color(link_type x) { return x->color; }
@@ -186,6 +186,8 @@ namespace lix
 		}
 	public:
 		using iterator = _rb_tree_iterator<value_type, reference, pointer>;
+		using const_iterator = const iterator;
+		size_type size() const { return node_count; }
 
 	private:
 		const color_type RED = _rb_tree_red;
@@ -194,8 +196,8 @@ namespace lix
 			header = get_node();
 			header->color = RED;
 			root() = nullptr;
-			leftmost() = nullptr;
-			rightmost() = nullptr;
+			leftmost() = header;
+			rightmost() = header;
 		}
 
 	public:
@@ -203,7 +205,7 @@ namespace lix
 			init();
 		}
 		~rb_tree() {
-			clear();
+			clear(root());
 			put_node(header);
 		}
 	public:
@@ -211,7 +213,209 @@ namespace lix
 		iterator begin() { return leftmost(); }
 		iterator end() { return header; }
 		bool empty() const { return node_count == 0; }
+	protected:
+		void left_rotate(link_type x) {
+			link_type y = x->right;
+			x->right = y->left;
+			y->left->parent = x;
+			y->parent = x->parent;
+			if (x->parent->left == x) x->parent->left = y;
+			else { x->parent->right = y; }
+			y->left = x;
+			x->parent = y;
+		}
 
+		void right_rotate(link_type y) {
+			link_type x = y->left;
+			y->left = x->right;
+			x->right->parent = y;
+			x->parent = y->parent;
+			if (y->parent->left == y) y->parent->left = x;
+			else y->parent->right = x;
+			x->right = y;
+			y->parent = x;
+		}
+
+		void clear(link_type& it) {
+			auto parent=it;
+			if ( it->left!=nullptr ) {
+				clear(left(it));
+			}
+			if(it->right!=nullptr) {
+				clear(right(it));
+			}
+			destory_node(it);
+		}
+	public:
+		iterator insert(value_type& x) {
+			auto node = create_node(x);
+			link_type it = root();
+			link_type tmp = parent(it);
+			while ( it!=nullptr ) {
+				tmp = it;
+				if (comp(x, value(it)))
+					it = left(it);
+				else { it = right(it); }
+			}
+			node->parent = tmp;
+			
+			if (comp(x, value(tmp))) { 
+				tmp->left = node;
+				if(tmp==header) {
+					root() = node;
+					rightmost() = node;
+				}else if(tmp == leftmost()) {
+					leftmost() = node;
+				}
+			}
+			else {
+				tmp->right = node;
+				if (tmp == rightmost())
+					rightmost() = node;
+			}
+			node->left = node->right = nullptr;
+			node->color = RED;
+			insert_aux(node);
+			++node_count;
+			return iterator(node);
+		}
+	protected:
+		void insert_aux(link_type& p) {
+			while ( p->parent->color==RED ) {
+				if(p->parent==p->parent->parent->left) {
+					auto y = p->parent->parent->right;
+					if(y->color==RED) {
+						p->parent->color = BLACK;
+						y->color = BLACK;
+						p->parent->parent->color = RED;
+						p = parent(parent(p));
+					} else {
+						if (p == p->parent->right) {
+							p = parent(p);
+							left_rotate(p);
+						}
+						p->parent->color = BLACK;
+						p->parent->parent->color = RED;
+						right_rotate(parent(parent(p)));
+					}
+				}else {
+					auto y = p->parent->parent->left;
+					if (y->color == RED) {
+						p->parent->color = BLACK;
+						y->color = BLACK;
+						p->parent->parent->color = RED;
+						p = parent(parent(p));
+					}
+					else {
+						if (p == p->parent->left) {
+							p = parent(p);
+							right_rotate(p);
+						}
+						p->parent->color = BLACK;
+						p->parent->parent->color = RED;
+						left_rotate(parent(parent(p)));
+					}
+				}
+			}
+		}
+	public:
+		void remove(link_type& p) {
+			// node to be deleted
+			link_type y = (left(p) == nullptr || right(p) == nullptr) ? p : successor(p);
+			// y's child
+			link_type y_child = (y->left != nullptr) ? y->left : y->right;
+
+			y_child->parent = y->parent;
+			if(y==y->parent->left) {
+				y->parent->left = y_child;
+			}else {
+				y->parent->right = y_child;
+			}
+			if(y!=p) value(p)=value(y);
+			if (y->color == BLACK) remove_aux(y);
+			destory_node(y);
+
+
+		}
+	protected:
+		link_type successor(link_type& p) {
+			if (p->right != nullptr)
+				return min(p->right);
+			auto y = p->parent;
+			while ( y!=nullptr && p==y->right ) {
+				p = y;
+				y = y->parent;
+			}
+			return y;
+		}
+
+		link_type predecessor(link_type& p) {
+			if (p->left != nullptr)
+				return max(p->left);
+			auto y = p->parent;
+			while (y != nullptr && p == y->left) {
+				p = y;
+				y = y->parent;
+			}
+			return y;
+		}
+
+		void remove_aux(link_type& x) {
+			while ( x!=root()&&x->color==BLACK ) {
+				if(x==x->parent->left) {
+					auto w = x->parent->right;
+					if(w->color==RED) {
+						w->color = BLACK;
+						x->parent->color = RED;
+						left_rotate(x->parent);
+						w = x->parent->right;
+					}
+					if(w->left->color==BLACK&&w->right->color==BLACK) {
+						w->color = RED;
+						x = x->parent;
+					}else if(w->right->color==BLACK) {
+						w->left->color = BLACK;
+						w->color = RED;
+						right_rotate(w);
+						w = x->parent->right;
+					}
+					w->color = x->parent->color;
+					x->parent->color = BLACK;
+					w->right->color = BLACK;
+					left_rotate(x->parent);
+					x = root();
+				}else {
+					auto w = x->parent->left;
+					if (w->color == RED) {
+						w->color = BLACK;
+						x->parent->color = RED;
+						right_rotate(x->parent);
+						w = x->parent->left;
+					}
+					if (w->right->color == BLACK && w->left->color == BLACK) {
+						w->color = RED;
+						x = x->parent;
+					}
+					else if (w->left->color == BLACK) {
+						w->right->color = BLACK;
+						w->color = RED;
+						left_rotate(w);
+						w = x->parent->left;
+					}
+					w->color = x->parent->color;
+					x->parent->color = BLACK;
+					w->left->color = BLACK;
+					right_rotate(x->parent);
+					x = root();
+				}
+			}
+		}
+	};
+
+	template <typename T>
+	struct identity
+	{
+		T operator()(T x) const { return x; }
 	};
 }
 

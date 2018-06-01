@@ -125,6 +125,7 @@
     <ClInclude Include="src\container\list.hpp" />
     <ClInclude Include="src\container\queue.hpp" />
     <ClInclude Include="src\container\rb_tree.hpp" />
+    <ClInclude Include="src\container\set.hpp" />
     <ClInclude Include="src\container\stack.hpp" />
     <ClInclude Include="src\container\vector.hpp" />
     <ClInclude Include="src\memory\allocator.hpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="test\main.cpp" />
     <ClCompile Include="test\PriorityQueueTest.cpp" />
     <ClCompile Include="test\QueueTest.cpp" />
+    <ClCompile Include="test\RbTreeTest.cpp" />
     <ClCompile Include="test\StackTest.cpp" />
     <ClCompile Include="test\VectorTest.cpp" />
   </ItemGroup>
