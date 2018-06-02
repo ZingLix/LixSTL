@@ -8,26 +8,21 @@
 #include <queue>
 
 #include "../src/container/priority_queue.hpp"
+#include "../src/container/rb_tree.hpp"
 
 int main(int ac, char* av[])
 {
 	testing::InitGoogleTest(&ac, av);
 	::testing::GTEST_FLAG(filter) = "RbTreeTest*";
 //	while (true) 
-	RUN_ALL_TESTS();
+	//RUN_ALL_TESTS();
 
-	//std::vector<int> ex{ 65,25,96,24,35,87,23 };
-	//lix::priority_queue<int> lixqueue;
-	//for (int i = 0; i<ex.size(); i++) {
-	//	lixqueue.push(ex[i]);
-	//	//lixqueue.print();
-	//	//std::cout << std::endl;
-	//}
-	//lix::make_heap(ex.begin(), ex.end());
-	//lix::sort_heap(ex.begin(), ex.end());
-	//for (int i = 0; i<ex.size(); i++) {
-	//	std::cout << ex[i]<<" ";
-	//}
+	lix::rb_tree<int, int, lix::identity<int>, std::less<int>> tree;
+	//EXPECT_EQ(tree.size(), 0);
+	for(int i=10;i>0;--i)
+		tree.insert(i);
+	for (int i = 1; i <= 10; ++i)
+		tree.remove(i);
 	system("pause");
 	return 0;
 }

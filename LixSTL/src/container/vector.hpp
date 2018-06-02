@@ -286,7 +286,7 @@ namespace lix
 			if (static_cast<size_type>(_tail - _end) >= n) {
 				auto elems_after = _end - pos;
 				iterator old_end = _end;
-				std::uninitialized_copy(_end - n, _end, _end);
+				lix::uninitialized_copy(_end - n, _end, _end);
 				_end += n;
 				std::copy_backward(pos, old_end - n, old_end);
 				std::fill(pos, pos + n, value);
