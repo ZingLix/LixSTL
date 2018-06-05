@@ -24,7 +24,7 @@ TEST(RbTreeTest, insert) {
 	for(int i=1000;i>0;--i) {
 		std::uniform_int_distribution<int> dis(0, i-1);
 		dice_roll = dis(generator);
-		tree.remove(vec[dice_roll]);
+		tree.erase(vec[dice_roll]);
 		vec.erase(vec.begin()+ dice_roll);
 		EXPECT_EQ(tree.test(), true);
 		EXPECT_EQ(tree.size(), i - 1);

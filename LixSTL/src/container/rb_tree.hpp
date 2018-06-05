@@ -4,6 +4,7 @@
 #include "../memory/allocator.hpp"
 #include "../memory/allocator_traits.hpp"
 #include <queue>
+#include "queue.hpp"
 
 namespace lix
 {
@@ -48,7 +49,7 @@ namespace lix
 		_rb_tree_iterator(link_type& x) { node = x; }
 		_rb_tree_iterator(const iterator& it) { node = it.node; }
 
-		void increment() {
+		void increment()  {
 			if (node->right != nullptr) {
 				node = node->right;
 				while (node->left != nullptr) node = node->left;
@@ -62,7 +63,7 @@ namespace lix
 				if (node->right != p) node = p;
 			}
 		}
-		void decrement() {
+		void decrement()  {
 			if (node->color == _rb_tree_red && node->parent->parent == node) {
 				node = node->right;
 			}
@@ -84,16 +85,16 @@ namespace lix
 			return static_cast<link_type>(node)->value;
 		}
 		//T operator->();
-		self operator++() {
+		self operator++()  {
 			increment();
 			return *this;
 		}
-		self operator++(int) {
+		self operator++(int)  {
 			self tmp = *this;
 			increment();
 			return tmp;
 		}
-		self operator--() {
+		self operator--()  {
 			decrement();
 			return *this;
 		}
@@ -102,7 +103,8 @@ namespace lix
 			decrement();
 			return tmp;
 		}
-
+		bool operator==(const self& x) const { return node == x.node; }
+		bool operator!=(const self& x) const { return node != x.node; }
 	};
 
 	template<class Value,class Compare,class Alloc=allocator<Value>>
@@ -115,6 +117,7 @@ namespace lix
 		using color_type = _rb_tree_color;
 		static const color_type RED = _rb_tree_red;
 		static const color_type BLACK = _rb_tree_black;
+		using self = rb_tree<Value, Compare, Alloc>;
 
 	public:
 		//using key_type = Key;
@@ -130,7 +133,12 @@ namespace lix
 	protected:
 		link_type get_node() { return node_allocator::allocate(1); }
 		void put_node(link_type x) { node_allocator::deallocate(x); }
-
+		template< class... Args >
+		link_type emplace_node(Args&&... args) {
+			link_type node = get_node();
+			allocator_traits<node_allocator>::construct(alloc_, node, args);
+			return node;
+		}
 		link_type create_node(const value_type& x) {
 			link_type node = get_node();
 			allocator_traits<node_allocator>::construct(alloc_,node, x);
@@ -147,11 +155,7 @@ namespace lix
 			put_node(p);
 		}
 
-	protected:
-		node_allocator alloc_;
-		size_type node_count;
-		link_type header;
-		Compare comp;
+
 
 		link_type& root() { return header->parent; }
 		link_type& leftmost() { return header->left; }
@@ -184,7 +188,6 @@ namespace lix
 		using const_iterator = const iterator;
 
 	private:
-
 		void init() {
 			header = get_node();
 			header->color = RED;
@@ -197,15 +200,49 @@ namespace lix
 		rb_tree(const Compare& compare=Compare()):alloc_(),node_count(0),comp(compare) {
 			init();
 		}
+		template< class InputIt >
+		rb_tree(InputIt first, InputIt last,
+			bool is_unique = false,
+			const Compare& comp = Compare(),
+			const Alloc& alloc = Alloc()):alloc_(alloc),node_count(0),comp(comp) {
+			init();
+			if(is_unique) insert_unique(first, last);
+			else insert(first, last); 
+		}
+		rb_tree(rb_tree& other) {
+			init();
+			copy(other.root());
+		}
+
+		rb_tree(std::initializer_list<value_type> ilist,
+			bool is_unique = false,
+			const Compare& comp = Compare(),
+			const Alloc& alloc = Alloc()):alloc_(alloc),comp(comp) {
+			init();
+			if (is_unique) insert_unique(ilist);
+			else insert(ilist);
+		}
+
 		~rb_tree() {
 			clear(root());
 			put_node(header);
 		}
 		Compare key_comp() const { return comp; }
-		iterator begin() { return leftmost(); }
-		iterator end() { return header; }
+		iterator begin()  { return leftmost(); }
+		iterator end() { return iterator(header); }
 		bool empty() const { return node_count == 0; }
 		size_type size() const { return node_count; }
+		node_allocator get_allocator() const { return alloc_; }
+
+		void operator=(const rb_tree& other) {
+			clear();
+			copy(other.root());
+		}
+
+		void operator=(std::initializer_list<value_type> ilist) {
+			clear();
+			insert(ilist);
+		}
 
 	protected:
 		void left_rotate(link_type x) {
@@ -235,7 +272,28 @@ namespace lix
 			y->parent = x;
 		}
 
-		void clear(link_type it) {
+		void copy(link_type root) {
+			header->parent = _copy_tree(root, header);
+			update_leftmost();
+			update_rightmost();
+		}
+
+		link_type _copy_tree(link_type root,link_type parent) {
+			if (root == nullptr) return nullptr;
+			link_type node = clone_node(root);
+			node->left = _copy_tree(root->left,node);
+			node->right = _copy_tree(root->right,node);
+			node->parent = parent;
+			return node;
+		}
+
+	public:
+		void clear() noexcept {
+			clear(root());
+		}
+
+	protected:
+		void clear(link_type it) noexcept {
 			auto parent=it;
 			if(it!=nullptr) {
 				if (it->left != nullptr) {
@@ -246,9 +304,11 @@ namespace lix
 				}
 				destory_node(it);
 			}
+			header->parent = nullptr;
 		}
+
 	public:
-		iterator insert(value_type& x) {
+		iterator insert(const value_type& x) {
 			iterator p;
 			link_type it = root();
 			if(it==nullptr) {
@@ -267,7 +327,43 @@ namespace lix
 			return p;
 		}
 
-		std::pair<iterator,bool> insert_unique(value_type& x) {
+		void insert(std::initializer_list<value_type> ilist) {
+			for (auto it = ilist.begin(); it != ilist.end(); ++it) {
+				insert(*it);
+			}
+		}
+
+		template< class InputIt >
+		void insert(InputIt first, InputIt last) {
+			while(first!=last) {
+				insert(*first);
+				++first;
+			}
+		}
+
+		template< class... Args >
+		iterator emplace(Args&&... args) {
+			link_type node = emplace_node(args);
+			iterator p;
+			link_type it = root();
+			if (it == nullptr) {
+				return iterator(node);
+			}
+			else {
+				link_type tmp = parent(it);
+				while (it != nullptr) {
+					tmp = it;
+					if (comp(node->value, value(it)))
+						it = left(it);
+					else { it = right(it); }
+				}
+				p = _insert(tmp, node);
+			}
+			++node_count;
+			return p;
+		}
+
+		std::pair<iterator,bool> insert_unique(const value_type& x) {
 			iterator p;
 			link_type it = root();
 			++node_count;
@@ -290,28 +386,64 @@ namespace lix
 					}
 					t = t->parent;
 				}
-
-				
 				p = _insert(tmp, x);
 			}
 			return std::make_pair(p, true);
 		}
 
-		iterator create_root(value_type& val) {
-			auto node = create_node(val);
-			header->parent = node;
-			node->parent = header;
-			leftmost() = node;
-			rightmost() = node;
-			node->left = node->right = nullptr;
-			node->color = BLACK;
-			return iterator(node);
+		void insert_unique(std::initializer_list<value_type> ilist) {
+			for(auto it=ilist.begin();it!=ilist.end();++it) {
+				insert_unique(*it);
+			}
 		}
 
-		iterator _insert(link_type x,value_type& val) {
+		template< class InputIt >
+		void insert_unique(InputIt first, InputIt last) {
+			while (first != last) {
+				insert_unique(*first);
+				++first;
+			}
+		}
+
+		template< class... Args >
+		std::pair<iterator, bool> emplace_unique(Args&&... args) {
+			link_type node = emplace_node(args);
+			iterator p;
+			link_type it = root();
+			++node_count;
+			if (it == nullptr) {
+				return std::make_pair(node, true);
+			}
+			else {
+				link_type tmp = parent(it);
+				while (it != nullptr) {
+					tmp = it;
+					if (comp(node->value, value(it)))
+						it = left(it);
+					else { it = right(it); }
+				}
+				link_type t = tmp;
+				while (t != header) {
+					if (!(comp(t->value, node->value) || comp(node->value, t->value))) {
+						--node_count;
+						return std::make_pair(iterator(tmp), false);
+					}
+					t = t->parent;
+				}
+				p = _insert(tmp, node);
+			}
+			return std::make_pair(p, true);
+		}
+
+	protected:
+		iterator _insert(link_type x,const value_type& val) {
 			auto node = create_node(val);
+			return _insert(x,node);
+		}
+
+		iterator _insert(link_type x, link_type node) {
 			node->parent = x;
-			if (!comp(value(x),val)) {
+			if (!comp(value(x), node->value)) {
 				x->left = node;
 				if (x == header) {
 					root() = node;
@@ -331,7 +463,6 @@ namespace lix
 			return iterator(node);
 		}
 
-	protected:
 		void insert_aux(link_type& p) {
 			while (p!=root()&& p->parent->color==RED ) {
 				if(p->parent==p->parent->parent->left) {
@@ -372,6 +503,17 @@ namespace lix
 			color(root()) = BLACK;
 		}
 
+		iterator create_root(const value_type& val) {
+			auto node = create_node(val);
+			header->parent = node;
+			node->parent = header;
+			leftmost() = node;
+			rightmost() = node;
+			node->left = node->right = nullptr;
+			node->color = BLACK;
+			return iterator(node);
+		}
+
 		void _transplant(link_type u, link_type v) {
 			if (u->parent == header) {
 				root() = v;
@@ -387,13 +529,22 @@ namespace lix
 		}
 
 	public:
+		iterator find(value_type val) {
+			return iterator(_find(val));
+		}
+
+	protected:
 		link_type _find(value_type val) {
-			link_type it = root();
+			return _find(val, root());
+		}
+
+		link_type _find(value_type val,link_type begin) {
+			link_type it = begin;
 			while (it != nullptr) {
 				if (comp(val, it->value)) {
 					it = it->left;
 				}
-				else if (val == it->value) {
+				else if (equal(val,it->value)) {
 					return it;
 				}
 				else {
@@ -403,128 +554,69 @@ namespace lix
 			return it;
 		}
 
-		//iterator find(const Key& k) {
-		//	link_type y = header;
-		//	link_type x = root();
-
-		//	while(x!=nullptr) {
-		//		if(key_comp(key(x),k)) {
-		//			y = x;
-		//			x = x->left;
-		//		}else {
-		//			x = x->right;
-		//		}
-		//	}
-		//	iterator j
-		//}
-
-		void remove(value_type val) {
+	public:
+		size_type erase(value_type val) {
+			//queue<link_type> q;
+			//link_type it = _find(val);
+			//while(it!=nullptr&&it!=header&& equal(it->value,val)) {
+			//	q.push(it);
+			//	it = successor(it);
+			//}
+			//size_type count = q.size();
+			////if(it==nullptr) return end();
+			//while (!q.empty()) {
+			//	_remove_entry(q.front());
+			//	q.pop();
+			//}
+			//return count;
 			link_type it = _find(val);
-			if(it==nullptr) return;
-			_remove(it);
-			--node_count;
-
+			if (it == nullptr) return 0;
+			_remove_entry(it);
+			return 1;
 		}
 
+		iterator erase(iterator it) {
+			return _remove_entry(it.node);
+		}
 
+		iterator erase(const_iterator first, const_iterator last) {
+			size_type distance = 0;
+			iterator ifirst=first, ilast=last;
+			while (ifirst!=ilast) {
+				++distance;
+				++ifirst;
+			}
+			iterator it = first;
+			for(int i=0;i<distance-1;++i) {
+				erase(it++);
+			}
+			return erase(it);
+		}
 
-		//void _remove(link_type z) {
-		//	link_type y = z, x;
-		//	color_type ori_color = y->color;
-		//	bool is_left= z->parent->left==z ? true:false ;
-		//	if(z->left==nullptr) {
-		//		x = z->right;
-		//		_transplant(z, z->right);
-		//	}else if(z->right==nullptr) {
-		//		x = z->left;
-		//		_transplant(z, z->left);
-		//	} else {
-		//		y = min(z->right);
-		//		ori_color = y->color;
-		//		x = y->right;
-		//		if(y->parent==z) {
-		//			x->parent = y;
-		//		} else {
-		//			_transplant(y, y->right);
-		//			y->right = z->right;
-		//			y->right->parent = y;
-		//		}
-		//		_transplant(z, y);
-		//		y->left = z->left;
-		//		y->left->parent = y;
-		//		y->color = z->color;
-		//	}
-		//	if (ori_color == BLACK) {
-		//		link_type p = z->parent;
-		//		if(x==nullptr&&is_left) {
-		//			link_type u = p->right;
-		//			if(u==nullptr) {
-		//				z->parent->color = RED;
-		//				p = z->parent;
-		//				remove_aux(p);
-		//				return;
-		//			}
-		//			if (colorOf(u) == RED) {
-		//				left_rotate(p);
-		//				u->color = BLACK;
-		//				p->color = RED;
-		//				u = p->right;
-		//			}
-		//			if (colorOf(u->left) == BLACK && colorOf(u->right) == BLACK) {
-		//				u->color = RED;
-		//				
-		//			}
-		//			else if (colorOf(u->right) == BLACK) {
-		//				u->left->color = BLACK;
-		//				u->color = RED;
-		//				right_rotate(u);
-		//				u = p->right;
-		//			}
-		//			u->color = colorOf(p);
-		//			p->color = BLACK;
-		//			if(u->right!=nullptr)
-		//			u->right->color = BLACK;
-		//			left_rotate(p);
-		//			p = root();
-		//		}else if(x==nullptr&&!is_left) {
-		//			link_type u = p->left;  //cannot be nullptr
-		//			if (u == nullptr) {
-		//				z->parent->color = BLACK;
-		//				return;
-		//			}
-		//			if (colorOf(u) == RED) {
-		//				right_rotate(p);
-		//				u->color = BLACK;
-		//				p->color = RED;
-		//				u = p->left;
-		//			}
-		//			if (colorOf(u->left) == BLACK && colorOf(u->right) == BLACK) {
-		//				u->color = RED;
-		//			}
-		//			else if (colorOf(u->left) == BLACK) {
-		//				u->right->color = BLACK;
-		//				u->color = RED;
-		//				left_rotate(u);
-		//				u = p->left;
-		//			}
-		//			u->color = colorOf(p);
-		//			p->color = BLACK;
-		//			if (u->left != nullptr)
-		//			u->left->color = BLACK;
-		//			right_rotate(p);
-		//			p = root();
-		//		}
-		//		remove_aux(p);
-		//	}
-
-		//}
+	protected:
+		iterator _remove_entry(link_type node)
+		{
+			if (node_count == 0) return end();
+			link_type succ = successor(node);
+			_remove(node);
+			if (node == leftmost()) update_leftmost();
+			if (node == rightmost()) update_rightmost();
+			--node_count;
+			return iterator(succ);
+		}
 
 		void _remove(link_type node) {
 			{
 				link_type child, parent;
 				color_type color;
-
-				if ((node->left != NULL) && (node->right != NULL))
+				if(node==header&&node->parent->left==nullptr&&node->parent->right==nullptr) {
+					destory_node(node->parent);
+					node->parent = nullptr;
+					update_leftmost();
+					update_rightmost();
+					return;
+				}
+				if ((node->left != nullptr) && (node->right != nullptr))
 				{
 					link_type replace = node;
 
@@ -565,7 +657,6 @@ namespace lix
 
 					if (color == BLACK)
 						remove_aux(child, parent);
-
 					destory_node(node);
 					return;
 				}
@@ -660,7 +751,6 @@ namespace lix
 			it->color = BLACK;
 		}
 
-	protected:
 		link_type successor(link_type& p) {
 			if (p->right != nullptr)
 				return min(p->right);
@@ -682,6 +772,45 @@ namespace lix
 			}
 			return y;
 		}
+
+		void update_leftmost() {
+			link_type it = root();
+			if(it!=nullptr) {
+				while (it->left!=nullptr) {
+					it = it->left;
+				}
+				header->left = it;
+			} else {
+				header->left = header;
+			}
+		}
+
+		void update_rightmost() {
+			link_type it = root();
+			if (it != nullptr) {
+				while (it->right != nullptr) {
+					it = it->right;
+				}
+				header->right = it;
+			}
+			else {
+				header->right = header;
+			}
+		}
+
+	public:
+		size_type count(const value_type& val) const {
+			int count = 0;
+			for(auto it=begin();it!=end();++it) {
+				if (euqal(*it, val)) ++count;
+			}
+			return count;
+		}
+	protected:
+		bool equal(const value_type& val1,const value_type& val2) {
+			return !comp(val1, val2) && !comp(val1, val2);
+		}
+
 	public:
 		void print(int depth=4) {
 			std::queue<link_type> stack1,stack2;
@@ -742,12 +871,12 @@ namespace lix
 			return true;
 		}
 
-	};
 
-	template <typename T>
-	struct identity
-	{
-		T operator()(T x) const { return x; }
+	protected:
+		node_allocator alloc_;
+		size_type node_count;
+		link_type header;
+		Compare comp;
 	};
 }
 

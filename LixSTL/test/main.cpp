@@ -9,30 +9,20 @@
 
 #include "../src/container/priority_queue.hpp"
 #include "../src/container/rb_tree.hpp"
+#include "../src/container/set.hpp"
 
 int main(int ac, char* av[])
 {
 	testing::InitGoogleTest(&ac, av);
-	::testing::GTEST_FLAG(filter) = "RbTreeTest*";
-//	while (true) 
-//	RUN_ALL_TESTS();
+	::testing::GTEST_FLAG(filter) = "SetTest*";
+	//while (true) 
+	RUN_ALL_TESTS();
 
-	//lix::rb_tree<int, std::less<int>> tree;
-	//for (int i = 10; i > 0; --i) {
-	//	tree.insert_unique(i);
-	//	tree.print();
-	//	std::cout << tree.test() << tree.size() << std::endl;
-	//}
-	//for (int i = 10; i > 0; --i) {
-	//	tree.insert_unique(i);
-	//	tree.print();
-	//	std::cout << tree.test() << tree.size() << std::endl;
-	//}
-	//for (int i = 10; i > 0; --i) {
-	//	tree.remove(i);
-	//	tree.print();
-	//	std::cout <<tree.test() << tree.size()<< std::endl;
-	//}
+	lix::set<int> set;
+	set.insert(3);
+	set.erase(3);
+	set.erase(4);
+	
 	system("pause");
 	return 0;
 }
