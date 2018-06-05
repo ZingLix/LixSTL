@@ -3,7 +3,8 @@
 #include "../traits/iterator_traits.hpp"
 #include "../memory/allocator.hpp"
 #include "../memory/allocator_traits.hpp"
-
+#include "stack.hpp"
+#include <queue>
 namespace lix
 {
 	using _rb_tree_color = bool;
@@ -112,6 +113,8 @@ namespace lix
 		using rb_tree_node = _rb_tree_node<Value>;
 		using node_allocator =typename allocator_traits<Alloc>::template rebind_alloc<_rb_tree_node<Value>>;
 		using color_type = _rb_tree_color;
+		static const color_type RED = _rb_tree_red;
+		static const color_type BLACK = _rb_tree_black;
 
 	public:
 		using key_type = Key;
@@ -161,6 +164,8 @@ namespace lix
 		static link_type& key(link_type x) { return KeyOfValue()(x->left); }
 		static color_type& color(link_type x) { return x->color; }
 
+		color_type colorOf(link_type x) { return x == nullptr ? BLACK : x->color; }
+
 		static link_type min(link_type x) {
 			while (x->left != nullptr) {
 				x = x->left;
@@ -179,8 +184,7 @@ namespace lix
 		using const_iterator = const iterator;
 
 	private:
-		const color_type RED = _rb_tree_red;
-		const color_type BLACK = _rb_tree_black;
+
 		void init() {
 			header = get_node();
 			header->color = RED;
@@ -233,13 +237,15 @@ namespace lix
 
 		void clear(link_type it) {
 			auto parent=it;
-			if ( it->left!=nullptr ) {
-				clear(left(it));
+			if(it!=nullptr) {
+				if (it->left != nullptr) {
+					clear(left(it));
+				}
+				if (it->right != nullptr) {
+					clear(right(it));
+				}
+				destory_node(it);
 			}
-			if(it->right!=nullptr) {
-				clear(right(it));
-			}
-			destory_node(it);
 		}
 	public:
 		iterator insert(value_type x) {
@@ -323,92 +329,280 @@ namespace lix
 			}
 			color(root()) = BLACK;
 		}
+
+		void _transplant(link_type u, link_type v) {
+			if (u->parent == header) {
+				root() = v;
+			}
+			else if (u == u->parent->left) {
+				u->parent->left = v;
+			}
+			else {
+				u->parent->right = v;
+			}
+			if (v != nullptr)
+				v->parent = u->parent;
+		}
+
 	public:
-		void remove(value_type val) {
+		link_type find(value_type val) {
 			link_type it = root();
-			while ( it!= nullptr ) {
+			while (it != nullptr) {
 				if (comp(val, it->value)) {
 					it = it->left;
 				}
 				else if (val == it->value) {
-					_remove(it);
-					return;
+					return it;
 				}
 				else {
 					it = it->right;
 				}
 			}
-			
-			
+			return it;
 		}
 
-		void _transplant(link_type u,link_type v) {
-			if(u->parent==header) {
-				root() = v;
-			}else if(u==u->parent->left) {
-				u->parent->left = v;
-			} else {
-				u->parent->right = v;
-			}
-			if(v!=nullptr)
-				v->parent = u->parent;
-		}
-
-		void _remove(link_type p) {
-			link_type y = p;
-			bool ori_color = y->color;
-			link_type x;
-			bool is_left = (p == p->parent->left) ? true : false;
-			if(p->left==nullptr) {
-				x = p->right;
-				_transplant(p, p->right);
-			}else if(p->right==nullptr) {
-				x = p->left;
-				_transplant(p, p->left);
-			} else {
-				y = min(p->right);
-				ori_color = y->color;
-				x = y->right;
-				if(y->parent!=p) {
-					_transplant(y, y->right);
-					y->right = p->right;
-					y->right->parent = y;
-				}else {
-					x->parent = y;
-				}
-				_transplant(p, y);
-				y->left = p->left;
-				y->left->parent = y;
-				y->color = p->color;
-			}
-			if (ori_color == BLACK) remove_aux(p, is_left);
+		void remove(value_type val) {
+			link_type it = find(val);
+			if(it==nullptr) return;
+			_remove(it);
 			--node_count;
 
-
-
-
-
-
-			// node to be deleted
-			//link_type y = (left(p) == nullptr || right(p) == nullptr) ? p : successor(p);
-			//// y's child
-			//link_type y_child = (y->left != nullptr) ? y->left : y->right;
-			//if(y_child!=nullptr)
-			//	y_child->parent = y->parent;
-			//bool is_left;
-			//if(y==y->parent->left) {
-			//	y->parent->left = y_child;
-			//	is_left = true;
-			//}else {
-			//	y->parent->right = y_child;
-			//	is_left = false;
-			//}
-			//if(y!=p) value(p)=value(y);
-			//if (y->color == BLACK) remove_aux(y_child,is_left);
-			destory_node(y);
-
-
 		}
+
+
+
+		//void _remove(link_type z) {
+		//	link_type y = z, x;
+		//	color_type ori_color = y->color;
+		//	bool is_left= z->parent->left==z ? true:false ;
+		//	if(z->left==nullptr) {
+		//		x = z->right;
+		//		_transplant(z, z->right);
+		//	}else if(z->right==nullptr) {
+		//		x = z->left;
+		//		_transplant(z, z->left);
+		//	} else {
+		//		y = min(z->right);
+		//		ori_color = y->color;
+		//		x = y->right;
+		//		if(y->parent==z) {
+		//			x->parent = y;
+		//		} else {
+		//			_transplant(y, y->right);
+		//			y->right = z->right;
+		//			y->right->parent = y;
+		//		}
+		//		_transplant(z, y);
+		//		y->left = z->left;
+		//		y->left->parent = y;
+		//		y->color = z->color;
+		//	}
+		//	if (ori_color == BLACK) {
+		//		link_type p = z->parent;
+		//		if(x==nullptr&&is_left) {
+		//			link_type u = p->right;
+		//			if(u==nullptr) {
+		//				z->parent->color = RED;
+		//				p = z->parent;
+		//				remove_aux(p);
+		//				return;
+		//			}
+		//			if (colorOf(u) == RED) {
+		//				left_rotate(p);
+		//				u->color = BLACK;
+		//				p->color = RED;
+		//				u = p->right;
+		//			}
+		//			if (colorOf(u->left) == BLACK && colorOf(u->right) == BLACK) {
+		//				u->color = RED;
+		//				
+		//			}
+		//			else if (colorOf(u->right) == BLACK) {
+		//				u->left->color = BLACK;
+		//				u->color = RED;
+		//				right_rotate(u);
+		//				u = p->right;
+		//			}
+		//			u->color = colorOf(p);
+		//			p->color = BLACK;
+		//			if(u->right!=nullptr)
+		//			u->right->color = BLACK;
+		//			left_rotate(p);
+		//			p = root();
+		//		}else if(x==nullptr&&!is_left) {
+		//			link_type u = p->left;  //cannot be nullptr
+		//			if (u == nullptr) {
+		//				z->parent->color = BLACK;
+		//				return;
+		//			}
+		//			if (colorOf(u) == RED) {
+		//				right_rotate(p);
+		//				u->color = BLACK;
+		//				p->color = RED;
+		//				u = p->left;
+		//			}
+		//			if (colorOf(u->left) == BLACK && colorOf(u->right) == BLACK) {
+		//				u->color = RED;
+		//			}
+		//			else if (colorOf(u->left) == BLACK) {
+		//				u->right->color = BLACK;
+		//				u->color = RED;
+		//				left_rotate(u);
+		//				u = p->left;
+		//			}
+		//			u->color = colorOf(p);
+		//			p->color = BLACK;
+		//			if (u->left != nullptr)
+		//			u->left->color = BLACK;
+		//			right_rotate(p);
+		//			p = root();
+		//		}
+		//		remove_aux(p);
+		//	}
+
+		//}
+
+		void _remove(link_type node) {
+			{
+				link_type child, parent;
+				color_type color;
+
+				if ((node->left != NULL) && (node->right != NULL))
+				{
+					link_type replace = node;
+
+					replace = min(replace->right);
+
+					if (node!=root())
+					{
+						if (node->parent->left == node)
+							node->parent->left = replace;
+						else
+							node->parent->right = replace;
+					}
+					else {
+						root() = replace;
+					}
+					child = replace->right;
+					parent = replace->parent;
+					color = replace->color;
+
+					if (parent == node)
+					{
+						parent = replace;
+					}
+					else
+					{
+						if (child!=nullptr)
+							child->parent = parent;
+						parent->left = child;
+
+						replace->right = node->right;
+						node->right->parent= replace;
+					}
+
+					replace->parent = node->parent;
+					replace->color = node->color;
+					replace->left = node->left;
+					node->left->parent = replace;
+
+					if (color == BLACK)
+						remove_aux(child, parent);
+
+					destory_node(node);
+					return;
+				}
+				if (node->left != NULL)
+					child = node->left;
+				else
+					child = node->right;
+
+				parent = node->parent;
+				color = node->color;
+
+				if (child!=nullptr)
+					child->parent = parent;
+
+				if (parent!=header)
+				{
+					if (parent->left == node)
+						parent->left = child;
+					else
+						parent->right = child;
+				}
+				else {
+					root() = child;
+				}
+				if (color == BLACK)
+					remove_aux(child, parent);
+				delete node;
+			}
+		}
+
+		void remove_aux(link_type& it,link_type& par) {
+			while (it!=root()&&colorOf(it)==BLACK) {
+				if (it == par->left) {
+					link_type u = par->right;
+					if (colorOf(u) == RED) {
+						left_rotate(par);
+						u->color = BLACK;
+						par->color = RED;
+						u = par->right;
+					}
+					if (colorOf(u->left) == BLACK && colorOf(u->right) == BLACK) {
+						u->color = RED;
+						it = par;
+						par = it->parent;
+					}
+					else {
+						if (colorOf(u->right) == BLACK) {
+							u->left->color = BLACK;
+							u->color = RED;
+							right_rotate(u);
+							u = par->right;
+						}
+						u->color = colorOf(par);
+						par->color = BLACK;
+						u->right->color = BLACK;
+						left_rotate(par);
+						it = root();
+						break;
+					}
+				}
+				else {
+					link_type u = par->left;
+					if (colorOf(u) == RED) {
+						right_rotate(par);
+						u->color = BLACK;
+						par->color = RED;
+						u = par->left;
+					}
+					if (colorOf(u->left) == BLACK && colorOf(u->right) == BLACK) {
+						u->color = RED;
+						it = par;
+						par = it->parent;
+					}
+					else {
+						if (colorOf(u->left) == BLACK) {
+							u->right->color = BLACK;
+							u->color = RED;
+							left_rotate(u);
+							u = par->left;
+						}
+						u->color = colorOf(par);
+						par->color = BLACK;
+						u->left->color = BLACK;
+						right_rotate(par);
+						it = root();
+						break;
+					}
+				}
+
+			}
+			if(it!=nullptr)
+			it->color = BLACK;
+		}
+
 	protected:
 		link_type successor(link_type& p) {
 			if (p->right != nullptr)
@@ -431,77 +625,66 @@ namespace lix
 			}
 			return y;
 		}
+	public:
+		void print(int depth=4) {
+			std::queue<link_type> stack1,stack2;
+			stack1.push(root());
+			bool flag = true;
+			while(!stack1.empty()||!stack2.empty()) {
+				std::queue<link_type>* st1,* st2;
 
-		void remove_aux(link_type& x,bool is_left) {
-			while ( x!=root()&&x->color==BLACK ) {
-				if(is_left|| x==x->parent->left) {
-					auto w = x->parent->right;
-					if(w!=nullptr) {
-						if (w->color == RED) {
-							w->color = BLACK;
-							x->parent->color = RED;
-							left_rotate(x->parent);
-							w = x->parent->right;
-						}
-						if ((w->left==nullptr|| w->left->color == BLACK )&&(w->right==nullptr || w->right->color == BLACK)) {
-							w->color = RED;
-							x = x->parent;
-						}
-						else if (w->right == nullptr||w->right->color == BLACK) {
-							w->left->color = BLACK;
-							w->color = RED;
-							right_rotate(w);
-							w = x->parent->right;
-						}
-						w->color = x->parent->color;
-						x->parent->color = BLACK;
-						if(w->right!=nullptr)
-							w->right->color = BLACK;
-						left_rotate(x->parent);
-						x = root();
-					}else {
-						//if(x->parent->color==RED) {
-						//	x->parent->color = BLACK;
-						//	x = root();
-						//}else {
-						//	x = x->parent;
-						//}
-						//x->parent->color = BLACK;
-						
-					}
-					
-				}else {
-					auto w = x->parent->left;
-					if (w != nullptr) {
-						if (w->color == RED) {
-							w->color = BLACK;
-							x->parent->color = RED;
-							right_rotate(x->parent);
-							w = x->parent->left;
-						}
-						if (w->left != nullptr&&w->right != nullptr&&w->right->color == BLACK && w->left->color == BLACK) {
-							w->color = RED;
-							x = x->parent;
-						}
-						else if (w->right != nullptr&&w->left->color == BLACK) {
-							w->right->color = BLACK;
-							w->color = RED;
-							left_rotate(w);
-							w = x->parent->left;
-						}
-						w->color = x->parent->color;
-						x->parent->color = BLACK;
-						if (w->right != nullptr)
-							w->left->color = BLACK;
-						right_rotate(x->parent);
-						x = root();
-					}
-					
+				if(flag) {
+					st1 = &stack1;
+					st2 = &stack2;
+				} else {
+					st1 = &stack2;
+					st2 = &stack1;
 				}
-				is_left = false;
+				
+				for (int i = depth; i >= 0; --i) std::cout << "   ";
+				--depth;
+				while(!st1->empty()) {
+					if (st1->front() == nullptr) std::cout << "   ";
+					else {
+						link_type tmp = st1->front();
+						if(tmp->color==BLACK) {
+							std::cout << "/" << tmp->value << "\\";
+						}else {
+							std::cout << " " << tmp->value << " ";
+						}
+						st2->push(tmp->left);
+						st2->push(tmp->right);
+					}
+					st1->pop();
+				}
+				flag = !flag;
+				std::cout << std::endl;
 			}
-			x->color = BLACK;
 		}
+		bool test() {
+			if (root() == nullptr) return true;
+			if(color(root())==RED) return false;
+			int max_black = 0;
+			std::queue<std::pair<link_type,int>> st;
+			st.push(std::make_pair(root(),0));
+			while(!st.empty()) {
+				link_type it = st.front().first;
+				int cur_black = st.front().second;
+				if (it->color == BLACK) cur_black++;
+				if(it->color==RED) {
+					if(colorOf(it->left)!=BLACK||colorOf(it->right)!=BLACK) return false;
+				}
+				if (it->left != nullptr) st.push(std::make_pair(it->left, cur_black));
+				if (it->right != nullptr) st.push(std::make_pair(it->right, cur_black));
+				if(it->left==nullptr&&it->right==nullptr) {
+					if (max_black == 0) max_black = cur_black;
+					else if(max_black!=cur_black) return false;
+				}
+				st.pop();
+			}
+			return true;
+		}
+
 	};
 
 	template <typename T>
