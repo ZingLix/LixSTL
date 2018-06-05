@@ -6,7 +6,7 @@
 #include "../src/container/vector.hpp"
 
 TEST(RbTreeTest, insert) {
-	lix::rb_tree<int, int, lix::identity<int>, std::less<int>> tree;
+	lix::rb_tree<int, std::less<int>> tree;
 
 	std::default_random_engine generator(static_cast<unsigned int>(time(nullptr)));
 	std::uniform_int_distribution<int> distribution(0, 10000);

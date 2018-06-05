@@ -3,8 +3,8 @@
 #include "../traits/iterator_traits.hpp"
 #include "../memory/allocator.hpp"
 #include "../memory/allocator_traits.hpp"
-#include "stack.hpp"
 #include <queue>
+
 namespace lix
 {
 	using _rb_tree_color = bool;
@@ -84,20 +84,20 @@ namespace lix
 			return static_cast<link_type>(node)->value;
 		}
 		//T operator->();
-		T operator++() {
+		self operator++() {
 			increment();
 			return *this;
 		}
-		T operator++(int) {
+		self operator++(int) {
 			self tmp = *this;
 			increment();
 			return tmp;
 		}
-		T operator--() {
+		self operator--() {
 			decrement();
 			return *this;
 		}
-		T operator--(int) {
+		self operator--(int) {
 			self tmp = *this;
 			decrement();
 			return tmp;
@@ -105,7 +105,7 @@ namespace lix
 
 	};
 
-	template<class Key,class Value,class KeyOfValue,class Compare,class Alloc=allocator<Value>>
+	template<class Value,class Compare,class Alloc=allocator<Value>>
 	class rb_tree
 	{
 	protected:
@@ -117,7 +117,7 @@ namespace lix
 		static const color_type BLACK = _rb_tree_black;
 
 	public:
-		using key_type = Key;
+		//using key_type = Key;
 		using value_type = Value;
 		using pointer = value_type * ;
 		using const_pointer = const pointer;
@@ -161,7 +161,7 @@ namespace lix
 		static link_type right(link_type x) { return x->right; }
 		static link_type parent(link_type x) { return x->parent; }
 		static reference value(link_type x) { return x->value; }
-		static link_type& key(link_type x) { return KeyOfValue()(x->left); }
+		//static link_type& key(link_type x) { return KeyOfValue()(x->left); }
 		static color_type& color(link_type x) { return x->color; }
 
 		color_type colorOf(link_type x) { return x == nullptr ? BLACK : x->color; }
@@ -248,16 +248,11 @@ namespace lix
 			}
 		}
 	public:
-		iterator insert(value_type x) {
-			auto node = create_node(x);
+		iterator insert(value_type& x) {
+			iterator p;
 			link_type it = root();
 			if(it==nullptr) {
-				header->parent = node;
-				node->parent = header;
-				leftmost() = node;
-				rightmost() = node;
-				node->left = node->right = nullptr;
-				node->color = BLACK;
+				return create_root(x);
 			} else {
 				link_type tmp = parent(it);
 				while (it != nullptr) {
@@ -266,29 +261,76 @@ namespace lix
 						it = left(it);
 					else { it = right(it); }
 				}
-				node->parent = tmp;
-				if (comp(x, value(tmp))) {
-					tmp->left = node;
-					if (tmp == header) {
-						root() = node;
-						rightmost() = node;
-					}
-					else if (tmp == leftmost()) {
-						leftmost() = node;
-					}
-				}
-				else {
-					tmp->right = node;
-					if (tmp == rightmost())
-						rightmost() = node;
-				}
-				node->left = node->right = nullptr;
-				node->color = RED;
-				insert_aux(node);
+				p= _insert(tmp, x);
 			}
 			++node_count;
+			return p;
+		}
+
+		std::pair<iterator,bool> insert_unique(value_type& x) {
+			iterator p;
+			link_type it = root();
+			++node_count;
+			if (it == nullptr) {
+				return std::make_pair(create_root(x), true);
+			}
+			else {
+				link_type tmp = parent(it);
+				while (it != nullptr) {
+					tmp = it;
+					if (comp(x, value(it)))
+						it = left(it);
+					else { it = right(it); }
+				}
+				link_type t = tmp;
+				while(t!=header) {
+					if (!(comp(t->value, x) || comp(x, t->value))) {
+						--node_count;
+						return std::make_pair(iterator(tmp), false);
+					}
+					t = t->parent;
+				}
+
+				
+				p = _insert(tmp, x);
+			}
+			return std::make_pair(p, true);
+		}
+
+		iterator create_root(value_type& val) {
+			auto node = create_node(val);
+			header->parent = node;
+			node->parent = header;
+			leftmost() = node;
+			rightmost() = node;
+			node->left = node->right = nullptr;
+			node->color = BLACK;
 			return iterator(node);
 		}
+
+		iterator _insert(link_type x,value_type& val) {
+			auto node = create_node(val);
+			node->parent = x;
+			if (!comp(value(x),val)) {
+				x->left = node;
+				if (x == header) {
+					root() = node;
+					rightmost() = node;
+				}
+				else if (x == leftmost()) {
+					leftmost() = node;
+				}
+			}
+			else {
+				x->right = node;
+				if (x == rightmost())
+					rightmost() = node;
+			}
+			node->color = RED;
+			insert_aux(node);
+			return iterator(node);
+		}
+
 	protected:
 		void insert_aux(link_type& p) {
 			while (p!=root()&& p->parent->color==RED ) {
@@ -345,7 +387,7 @@ namespace lix
 		}
 
 	public:
-		link_type find(value_type val) {
+		link_type _find(value_type val) {
 			link_type it = root();
 			while (it != nullptr) {
 				if (comp(val, it->value)) {
@@ -361,8 +403,23 @@ namespace lix
 			return it;
 		}
 
+		//iterator find(const Key& k) {
+		//	link_type y = header;
+		//	link_type x = root();
+
+		//	while(x!=nullptr) {
+		//		if(key_comp(key(x),k)) {
+		//			y = x;
+		//			x = x->left;
+		//		}else {
+		//			x = x->right;
+		//		}
+		//	}
+		//	iterator j
+		//}
+
 		void remove(value_type val) {
-			link_type it = find(val);
+			link_type it = _find(val);
 			if(it==nullptr) return;
 			_remove(it);
 			--node_count;
