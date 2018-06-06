@@ -13,6 +13,7 @@ void setTest(lix::set<T>& lixset, std::set<T>& stdset) {
 	for(;stdit!=stdset.end();++lixit,++stdit) {
 		EXPECT_EQ(*lixit, *stdit);
 	}
+	EXPECT_EQ(lixset.size(), stdset.size());
 	EXPECT_EQ(lixit == lixset.end(), true);
 }
 
@@ -75,9 +76,7 @@ TEST(SetTest, insert_and_erase) {
 	setTest(lixset, stdset);
 
 	for(int i=0;i<10005;++i) {
-		//EXPECT_EQ(lixset.erase(i),stdset.erase(i));
-		lixset.erase(i);
-		stdset.erase(i);
+		EXPECT_EQ(lixset.erase(i),stdset.erase(i));
 	}
 	setTest(lixset, stdset);
 	EXPECT_EQ(lixset.empty(), true);
@@ -110,16 +109,13 @@ TEST(SetTest, insert_erase_related) {
 
 	for (int i = 0; i < 4; ++i) {
 		lixit = lixset.erase(add(lixset.begin(), 2));
-		lixset.print();
 		stdit = stdset.erase(add(stdset.begin(), 2));
 		setTest(lixset, stdset);
 		EXPECT_EQ(*lixit, *stdit);
 	}
-	//lixset.print();
 
 	lixit= lixset.erase(add(lixset.begin(), 3), add(lixset.begin(), 8));
 	stdit= stdset.erase(add(stdset.begin(), 3), add(stdset.begin(), 8));
-	//lixset.print();
-	//setTest(lixset, stdset);
+	setTest(lixset, stdset);
 	EXPECT_EQ(*lixit, *stdit);
 }

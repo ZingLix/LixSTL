@@ -212,6 +212,7 @@ namespace lix
 		rb_tree(rb_tree& other) {
 			init();
 			copy(other.root());
+			node_count = other.node_count;
 		}
 
 		rb_tree(std::initializer_list<value_type> ilist,
@@ -289,6 +290,7 @@ namespace lix
 
 	public:
 		void clear() noexcept {
+			node_count = 0;
 			clear(root());
 		}
 
@@ -312,6 +314,7 @@ namespace lix
 			iterator p;
 			link_type it = root();
 			if(it==nullptr) {
+				++node_count;
 				return create_root(x);
 			} else {
 				link_type tmp = parent(it);
@@ -751,7 +754,8 @@ namespace lix
 			it->color = BLACK;
 		}
 
-		link_type successor(link_type& p) {
+		link_type successor(const link_type& node) {
+			link_type p = node;
 			if (p->right != nullptr)
 				return min(p->right);
 			auto y = p->parent;
@@ -762,7 +766,8 @@ namespace lix
 			return y;
 		}
 
-		link_type predecessor(link_type& p) {
+		link_type predecessor(const link_type& node) {
+			link_type p = node;
 			if (p->left != nullptr)
 				return max(p->left);
 			auto y = p->parent;
@@ -846,6 +851,7 @@ namespace lix
 				flag = !flag;
 				std::cout << std::endl;
 			}
+			for(auto it =begin();it!=end();++it) std::cout <<*it<< " ";
 		}
 		bool test() {
 			if (root() == nullptr) return true;

@@ -14,14 +14,14 @@
 int main(int ac, char* av[])
 {
 	testing::InitGoogleTest(&ac, av);
-	::testing::GTEST_FLAG(filter) = "SetTest*";
-	//while (true) 
+//	::testing::GTEST_FLAG(filter) = "SetTest*";
+	while (true) 
 	RUN_ALL_TESTS();
 
-	lix::set<int> set;
-	set.insert(3);
-	set.erase(3);
-	set.erase(4);
+//	lix::set<int> set;
+//	set.insert(3);
+//	set.erase(3);
+//	set.erase(4);
 	
 	system("pause");
 	return 0;
