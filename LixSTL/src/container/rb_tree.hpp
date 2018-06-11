@@ -81,10 +81,12 @@ namespace lix
 			}
 		}
 
-		T operator*() {
+		T& operator*() {
 			return static_cast<link_type>(node)->value;
 		}
-		//T operator->();
+		T operator->() {
+			return &(operator*());
+		}
 		self operator++()  {
 			increment();
 			return *this;

@@ -24,9 +24,6 @@
     <Filter Include="src\traits">
       <UniqueIdentifier>{7ebfed4e-26e8-4846-a792-a76310849d71}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Deprecated">
-      <UniqueIdentifier>{d694263b-dbb7-4ab4-aa9e-f0365938d2a2}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\memory">
@@ -46,15 +43,6 @@
     </ClInclude>
     <ClInclude Include="src\memory\uninitialized.hpp">
       <Filter>src\memory</Filter>
-    </ClInclude>
-    <ClInclude Include="src\memory_uninitialized.hpp">
-      <Filter>src\Deprecated</Filter>
-    </ClInclude>
-    <ClInclude Include="src\memory_alloc.hpp">
-      <Filter>src\Deprecated</Filter>
-    </ClInclude>
-    <ClInclude Include="src\memory_construct.hpp">
-      <Filter>src\Deprecated</Filter>
     </ClInclude>
     <ClInclude Include="src\container\deque.hpp">
       <Filter>src\container</Filter>
@@ -87,6 +75,9 @@
       <Filter>src\container</Filter>
     </ClInclude>
     <ClInclude Include="src\container\pair.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="src\container\map.hpp">
       <Filter>src\container</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,6 +122,9 @@
       <Filter>test</Filter>
     </ClCompile>
     <ClCompile Include="test\SetTest.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\MapTest.cpp">
       <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>
