@@ -1,5 +1,6 @@
 #ifndef ALGORITHM_H_
 #define ALGORITHM_H_
+#include <functional>
 
 namespace lix
 {
@@ -16,6 +17,24 @@ void copy(ForwardIterator first, ForwardIterator end, ForwardIterator new_pos) {
 		++new_pos;
 	}
 }
+
+template<class T>
+struct identity
+{
+	template< class T>
+	constexpr T&& operator()(T&& t) const noexcept {
+		return std::forward<T>(t);
+	}
+};
+
+template<class T1,class T2>
+struct select1st
+{
+	constexpr T1 operator()(std::pair<T1, T2> t) const noexcept {
+		return t.first;
+	}
+};
+
 
 }
 

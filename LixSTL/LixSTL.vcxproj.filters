@@ -80,6 +80,15 @@
     <ClInclude Include="src\container\map.hpp">
       <Filter>src\container</Filter>
     </ClInclude>
+    <ClInclude Include="src\container\unordered_set.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="src\container\hash_table.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="src\container\unordered_map.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\main.cpp">
@@ -125,6 +134,15 @@
       <Filter>test</Filter>
     </ClCompile>
     <ClCompile Include="test\MapTest.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\HashTableTest.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\UnorderedSetTest.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\UnorderedMapTest.cpp">
       <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>

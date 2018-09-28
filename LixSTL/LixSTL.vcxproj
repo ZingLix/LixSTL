@@ -122,6 +122,7 @@
     <ClInclude Include="src\algorithm\algorithm.hpp" />
     <ClInclude Include="src\algorithm\heap.hpp" />
     <ClInclude Include="src\container\deque.hpp" />
+    <ClInclude Include="src\container\hash_table.hpp" />
     <ClInclude Include="src\container\list.hpp" />
     <ClInclude Include="src\container\map.hpp" />
     <ClInclude Include="src\container\pair.hpp" />
@@ -129,6 +130,8 @@
     <ClInclude Include="src\container\rb_tree.hpp" />
     <ClInclude Include="src\container\set.hpp" />
     <ClInclude Include="src\container\stack.hpp" />
+    <ClInclude Include="src\container\unordered_map.hpp" />
+    <ClInclude Include="src\container\unordered_set.hpp" />
     <ClInclude Include="src\container\vector.hpp" />
     <ClInclude Include="src\memory\allocator.hpp" />
     <ClInclude Include="src\memory\allocator_traits.hpp" />
@@ -144,6 +147,7 @@
     <ClCompile Include="src\container\priority_queue.hpp" />
     <ClCompile Include="test\algorithm_HeapTest.cpp" />
     <ClCompile Include="test\DequeTest.cpp" />
+    <ClCompile Include="test\HashTableTest.cpp" />
     <ClCompile Include="test\ListTest.cpp" />
     <ClCompile Include="test\main.cpp" />
     <ClCompile Include="test\MapTest.cpp" />
@@ -152,6 +156,8 @@
     <ClCompile Include="test\RbTreeTest.cpp" />
     <ClCompile Include="test\SetTest.cpp" />
     <ClCompile Include="test\StackTest.cpp" />
+    <ClCompile Include="test\UnorderedMapTest.cpp" />
+    <ClCompile Include="test\UnorderedSetTest.cpp" />
     <ClCompile Include="test\VectorTest.cpp" />
   </ItemGroup>
   <ItemGroup>
