@@ -1,13 +1,24 @@
 # LixSTL
 
-## Introduction
+> [-> 简体中文](https://github.com/ZingLix/LixSTL/blob/master/Readme.zh.md)
 
-An easy implementation of C++ STL in C++17.
+LixSTL is an easy implementation of C++ STL in C++17, mainly container and algorithm part. 
 
-The components to be implemented: traits, allocator, container, algorithm.
+I made it while I was learning the STL. In the process of learning, I refer to Hou Jie's "STL 源码剖析" which is a bit old. Therefore, I implement this repo with Modern C++ and have written serveral articles to introduce the components in STL (not finished yet).
 
-This project is just started and I'm still working on it.
+> [Conclusion](https://zinglix.xyz/2018/09/20/STL-container/) 与 [Catalog](https://zinglix.xyz/archive/?tag=STL) (in Chinese only)
 
-I will write documents to introduce all components (in Chinese).
+This repo is more suitable for the use of study. I hope this will help more people to understand the implementation of STL better and quicker. If you have any suggestion, issue is welcome. If you feel useful, you can press the star : D
 
-If you're interested on this project, you can star it and come back in serveral weeks :)
+## Build
+
+Visual Studio 2017 （C++17 and gtest is required）
+
+Linux support and isolating unit test are still being worked on.
+
+## Todo List
+
+- algorithm part
+- code improvement（see the TODO in the comment）
+- Linux support
+- isolating unit test
