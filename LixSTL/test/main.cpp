@@ -20,11 +20,11 @@ void print(lix::vector<int>& vec) {
 int main(int ac, char* av[])
 {
 	testing::InitGoogleTest(&ac, av);
-	::testing::GTEST_FLAG(filter) = "HashTableTest*";
-	while (true) 
+//	::testing::GTEST_FLAG(filter) = "HashTableTest*";
+//	while (true) 
 	RUN_ALL_TESTS();
 
-	system("pause");
+//	system("pause");
 	return 0;
 }
 

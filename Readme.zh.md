@@ -1,6 +1,8 @@
+[EngLish](https://github.com/ZingLix/LixSTL/blob/master/Readme.md) | 简体中文
+
 # LixSTL
 
-> [EngLish Version](https://github.com/ZingLix/LixSTL/blob/master/Readme.md)
+[![Build Status](https://travis-ci.com/ZingLix/LixSTL.svg?branch=master)](https://travis-ci.com/ZingLix/LixSTL)
 
 LixSTL 是在 C++17 基础上实现的一份简易的 C++ STL，主要是 container 和 algorithm 两大部分。
 
@@ -12,13 +14,28 @@ LixSTL 是在 C++17 基础上实现的一份简易的 C++ STL，主要是 contai
 
 ## Build
 
-Visual Studio 2017 （需要开启 C++17 以及安装 gtest）
+编译需要支持 C++17 的编译器，MSVC 2017、g++ >= 6、clang >= 6 测试通过。
 
-分离单元测试和 Linux 支持还在努力。。。
+如果你想在其他项目中使用，直接将 LixSTL/include 文件夹添加到 include 路径中即可。
+
+### 运行测试
+
+#### Visual Studio 2017
+
+先需要通过 Nuget 安装 [Google Test](https://www.nuget.org/packages/googletest/)，之后按下 F5 就可以直接开始构建。记住要开启 C++17。
+
+#### Linux
+
+先安装 gtest 和 cmake，之后运行
+
+```
+cmake .
+make
+```
+
+成功后进入 build 文件夹，`./LixSTL_test` 即可运行。
 
 ## Todo List
 
 - 算法部分
 - 代码改进（见代码中注释的 TODO）
-- Linux 支持
-- 单元测试分离

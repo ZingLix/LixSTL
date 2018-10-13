@@ -1,33 +1,33 @@
 language: cpp
+sudo: required
+dist: trusty
+
 matrix:
   include:
-  - os: linux
-    dist: trusty
-    compiler: gcc
-    env:
-      - COMPILER=g++-6
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: [g++-6]
-  - os: linux
-    dist: trusty
-    compiler: gcc
-    env:
-      - COMPILER=g++-7
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: [g++-7]
-  - os: linux
-    dist: trusty
-    compiler: gcc
-    env:
-      - COMPILER=g++-8
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: [g++-8]      
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+            - cmake
+      env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+  
+      # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+            - cmake
+      env:
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+        
     - os: linux
       compiler: clang
       addons:
@@ -36,22 +36,28 @@ matrix:
           packages: ['clang-6.0', 'g++-7']
       env:
         - CXX=clang++-6.0
+        - COMPILER=clang++-6.0
+        - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
 
     - os: linux
       compiler: clang
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-7']
-          packages: ['clang-7', 'g++-7']
+          packages: ['clang-7', 'g++-7', 'cmake']
       env:
         - CXX=clang++-7
+        - COMPILER=clang++-7
+        - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
 
-before_install:
+
+install:
+ - eval "${MATRIX_EVAL}"
  - sudo apt-get -qq update
  - sudo apt-get install -y libgtest-dev cmake
- - sudo wget https://github.com/google/googletest/archive/release-1.8.1.tar.gz
- - sudo tar xf release-1.8.1.tar.gz
- - cd googletest-release-1.8.1
+ - sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
+ - sudo tar xf release-1.7.0.tar.gz
+ - cd googletest-release-1.7.0
  - sudo cmake -DBUILD_SHARED_LIBS=ON .
  - sudo make
  - sudo cp -a include/gtest /usr/include
@@ -61,3 +67,6 @@ before_install:
 script:
  - cmake .
  - make
+
+notifications:
+  email: false
