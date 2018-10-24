@@ -1,6 +1,5 @@
 #ifndef MAP_H_
 #define MAP_H_
-#include <xstddef>
 #include <utility>
 #include "../memory/allocator.hpp"
 #include "pair.hpp"

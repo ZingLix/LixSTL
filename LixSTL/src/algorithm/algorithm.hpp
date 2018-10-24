@@ -21,9 +21,9 @@ void copy(ForwardIterator first, ForwardIterator end, ForwardIterator new_pos) {
 template<class T>
 struct identity
 {
-	template< class T>
-	constexpr T&& operator()(T&& t) const noexcept {
-		return std::forward<T>(t);
+	template< class T1>
+	constexpr T1&& operator()(T1&& t) const noexcept {
+		return std::forward<T1>(t);
 	}
 };
 

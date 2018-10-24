@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 2.6)
+project(LixSTL-test)
+find_package(GTest REQUIRED)
+file(GLOB test_src "*.cpp")
+include_directories(${GTEST_INCLUDE_DIRS})
+add_definitions(-std=c++17)
+add_executable(LixSTL_test ${test_src})
+target_link_libraries(LixSTL_test ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)

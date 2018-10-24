@@ -508,10 +508,9 @@ namespace lix
 		_end = _start + count;
 	}
 
-#pragma warning(disable: 4544)
 	template <class T, class Alloc>
 	template <class InputIt, std::enable_if_t<std::is_base_of<std::input_iterator_tag,
-		typename std::iterator_traits<InputIt>::iterator_category>::value, int> = 0 >
+		typename std::iterator_traits<InputIt>::iterator_category>::value, int> >
 		void vector<T, Alloc>::assign(InputIt first, InputIt last) 
 	{
 		reallocate(last - first);

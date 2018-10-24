@@ -1,7 +1,7 @@
 #ifndef LIST_H_
 #define LIST_H_
 
-#include "../include/memory"
+#include "../../include/memory"
 #include "../traits/iterator_traits.hpp"
 #include <list>
 namespace lix

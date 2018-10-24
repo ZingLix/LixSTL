@@ -138,7 +138,7 @@ namespace lix
 		template< class... Args >
 		link_type emplace_node(Args&&... args) {
 			link_type node = get_node();
-			allocator_traits<node_allocator>::construct(alloc_, node, args);
+			allocator_traits<node_allocator>::construct(alloc_, node, args...);
 			return node;
 		}
 		link_type create_node(const value_type& x) {
@@ -348,7 +348,7 @@ namespace lix
 
 		template< class... Args >
 		iterator emplace(Args&&... args) {
-			link_type node = emplace_node(args);
+			link_type node = emplace_node(args...);
 			iterator p;
 			link_type it = root();
 			if (it == nullptr) {
@@ -412,7 +412,7 @@ namespace lix
 
 		template< class... Args >
 		std::pair<iterator, bool> emplace_unique(Args&&... args) {
-			link_type node = emplace_node(args);
+			link_type node = emplace_node(args...);
 			iterator p;
 			link_type it = root();
 			++node_count;
