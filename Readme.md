@@ -14,7 +14,7 @@ This repo is more suitable for the use of study. I hope this will help more peop
 
 ## Build
 
-The complier needs to support C++17. MSVC 2017, g++ >= 6 and clang >= 6 all works。
+The compiler needs to support C++17. MSVC 2017, g++ >= 6 and clang >= 6 all works。
 
 If you want to use it in other projects, just add the LixSTL/include folder to the include path.
 
@@ -22,7 +22,7 @@ If you want to use it in other projects, just add the LixSTL/include folder to t
 
 #### Visual Studio 2017
 
-First you need to install [Google Test](https://www.nuget.org/packages/googletest/)with Nuget. Then press F5 and the build will begin. Remember to set the language standard to C++17.
+First, you need to install [Google Test](https://www.nuget.org/packages/googletest/) with Nuget. Then press F5 and the build will begin. Remember to set the language standard to C++17.
 
 #### Linux
 
