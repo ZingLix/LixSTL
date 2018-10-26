@@ -6,7 +6,7 @@ English | [简体中文](https://github.com/ZingLix/LixSTL/blob/master/Readme.zh
 
 LixSTL is an easy implementation of C++ STL in C++17, mainly container and algorithm part. 
 
-I made it while I was learning the STL. In the process of learning, I refer to Hou Jie's "STL 源码剖析" which is a bit old. Therefore, I implement this repo with Modern C++ and have written serveral articles to introduce the components in STL (not finished yet).
+I made it while I was learning the STL. In the process of learning, I refer to Hou Jie's "STL 源码剖析" which is a bit old. Therefore, I implement this repo with Modern C++ and have written several articles to introduce the components in STL (not finished yet).
 
 > [Conclusion](https://zinglix.xyz/2018/09/20/STL-container/) and [Catalog](https://zinglix.xyz/archive/?tag=STL) (in Chinese only)
 
